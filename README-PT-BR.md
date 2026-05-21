@@ -138,6 +138,39 @@ prático para fluxos de trabalho de codificação por agentes.
 A linha de base é: mantenha o agente longe do seu diretório inicial real,
 mantenha o estado de cada agente separado e deixe o caminho de risco explícito.
 
+### Por que não Docker Sandboxes (`sbx`)?
+
+[Docker Sandboxes](https://docs.docker.com/ai/sandboxes/) é uma boa opção
+quando você quer isolamento mais forte para agentes autônomos: ele executa
+sandboxes em microVMs, dá a cada sandbox um Docker daemon próprio e adiciona
+políticas e tratamento de credenciais ao redor do acesso de rede.
+
+O `sannux` não tenta substituir isso. Ele fica de propósito em templates de
+Docker Compose convencional porque o objetivo do projeto é outro:
+
+- os templates são fáceis de inspecionar, copiar para uma VPS e rodar com
+  Docker Compose padrão;
+- o runtime evita o overhead de uma VM por sandbox mais um Docker daemon
+  privado;
+- não há login em conta Docker, instalação do `sbx` nem configuração de
+  KVM/hypervisor no caminho feliz;
+- agent homes, workspaces, portas, ferramentas e config de providers continuam
+  explícitos em arquivos que o usuário pode editar.
+
+As duas abordagens também podem ser empilhadas. Você pode usar `sbx` como a
+fronteira externa mais forte e ainda rodar workloads Docker/Compose dentro dele
+quando o empacotamento repetível em contêiner for útil. Esse é o desenho melhor
+para repositórios críticos, runs com muitos secrets ou agentes sem supervisão
+que precisam de liberdade ampla. Isso compra mais isolamento, mas também
+adiciona outra camada de runtime e mais partes móveis.
+
+Use `sbx`, outro sandbox baseado em microVM ou uma VM remota descartável quando
+você precisar de uma fronteira mais forte, especialmente se o agente tiver que
+buildar e executar contêineres aninhados com autonomia ampla ou lidar com
+credenciais sensíveis. Use `sannux` quando você quiser templates Docker
+práticos, auditáveis e fáceis de copiar, e aceitar isolamento normal de
+contêiner como a fronteira.
+
 ## 3. As duas pastas que importam
 
 Cada modelo requer estes valores de `.env`:

@@ -136,6 +136,37 @@ agentic coding workflows.
 The baseline is: keep the agent out of your real home, keep each agent's state
 separate, and make the risky path explicit.
 
+### Why not Docker Sandboxes (`sbx`)?
+
+[Docker Sandboxes](https://docs.docker.com/ai/sandboxes/) is a good fit when
+you want stronger isolation for autonomous agents: it runs sandboxes in
+microVMs, gives each sandbox its own Docker daemon, and adds policy and
+credential handling around network access.
+
+`sannux` does not try to replace that. It intentionally stays on plain Docker
+Compose templates because the project goal is different:
+
+- templates are easy to inspect, copy to a VPS, and run with standard Docker
+  Compose;
+- the runtime avoids the overhead of a per-sandbox VM plus a private Docker
+  daemon;
+- there is no Docker account login, `sbx` installation, or KVM/hypervisor
+  setup in the happy path;
+- agent homes, workspaces, ports, tools, and provider config stay explicit in
+  files users can edit.
+
+The two approaches can also stack. You can use `sbx` as the stronger outer
+boundary and still run Docker/Compose workloads inside it when repeatable
+container packaging is useful. That is the better shape for critical repos,
+runs with many secrets, or unattended agents that need broad freedom. It buys
+more isolation, but also adds another runtime layer and more moving parts.
+
+Use `sbx`, another microVM-based sandbox, or a remote disposable VM when you
+need a stronger boundary, especially if the agent must build and run nested
+containers with broad autonomy or handle sensitive credentials. Use `sannux`
+when you want practical, auditable, copyable Docker templates and you accept
+normal container isolation as the boundary.
+
 ## 3. The two folders that matter
 
 Every template requires these `.env` values:
