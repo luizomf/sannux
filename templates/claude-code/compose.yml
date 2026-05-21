@@ -1,0 +1,96 @@
+# templates/claude-code — service definition.
+#
+# Usage from this folder:
+#   install -m 0600 .env.example .env
+#   ./setup-host.sh
+#   docker compose run --rm agent                          # launch Claude Code
+#   docker compose --profile daemon up -d remote-control   # Remote Control daemon
+#   docker compose run --rm agent --version                # claude with args
+#   docker compose run --rm --entrypoint bash agent        # interactive shell
+#   docker compose down -v                                 # stop + clean up
+
+x-claude-code: &claude-code
+  build:
+    context: .
+    args:
+      # Forwarded to the Dockerfile so the in-container `agent` user
+      # matches your host UID/GID. Sourced from .env.
+      USER_UID: ${USER_UID:-1000}
+      USER_GID: ${USER_GID:-1000}
+  image: sannux/claude-code:latest
+
+  # Resource caps: not security; just limits for runaway commands.
+  # Tune via .env to your VPS size or Docker Desktop allocation.
+  mem_limit: ${MEM_LIMIT:-4g}
+  cpus: ${CPU_LIMIT:-4}
+  pids_limit: 512
+
+  # The template .env is passed to the container. Keep it private and scoped to
+  # values this agent may see.
+  env_file:
+    - .env
+
+  # Terminal color hints for TUI agents.
+  environment:
+    TERM: ${SANNUX_TERM:-xterm-256color}
+    COLORTERM: ${SANNUX_COLORTERM:-truecolor}
+    FORCE_COLOR: ${SANNUX_FORCE_COLOR:-}
+
+  working_dir: /workspace
+
+x-claude-code-ports: &claude-code-ports
+  # Preview ports for apps launched through the Remote Control daemon.
+  # Ephemeral `agent` runs publish ports explicitly per command.
+  - '${PORT_BIND_ADDRESS:-127.0.0.1}:${HOST_PORT_3000:-3000}:3000'
+  - '${PORT_BIND_ADDRESS:-127.0.0.1}:${HOST_PORT_8000:-8000}:8000'
+  - '${PORT_BIND_ADDRESS:-127.0.0.1}:${HOST_PORT_8080:-8080}:8080'
+
+x-claude-code-volumes: &claude-code-volumes
+  # Required bind mounts. Keep both host paths outside this repository:
+  # WORKSPACE_PATH is the project Claude can edit; AGENT_HOME_PATH is the
+  # persisted agent home with auth, config, history, logs, and memory.
+  - type: bind
+    source:
+      ${WORKSPACE_PATH:?Set WORKSPACE_PATH in .env to an absolute host path
+      outside this repo}
+    target: /workspace
+    bind:
+      create_host_path: false
+  - type: bind
+    source:
+      ${AGENT_HOME_PATH:?Set AGENT_HOME_PATH in .env to an absolute host path
+      outside this repo}
+    target: /home/agent
+    bind:
+      create_host_path: false
+
+services:
+  agent:
+    <<: *claude-code
+    volumes: *claude-code-volumes
+
+    # Claude Code is a TUI; it needs a TTY and stdin attached.
+    stdin_open: true
+    tty: true
+    init: true
+
+  remote-control:
+    <<: *claude-code
+    # Preview ports for apps launched through the always-on Remote Control
+    # session. Ephemeral `agent` runs publish ports explicitly per command.
+    ports: *claude-code-ports
+    volumes: *claude-code-volumes
+
+    profiles: ['daemon']
+
+    command:
+      - -n
+      - main-session
+      - --remote-control
+
+    # Claude Code is a TUI; it needs a TTY and stdin attached.
+    stdin_open: true
+    tty: true
+    init: true
+
+    restart: unless-stopped

@@ -1,0 +1,12 @@
+# templates/opencode — local artifacts.
+
+# Persistent agent state: auth tokens, history, config. Never commit.
+state/*
+!state/.gitkeep
+
+# Default workspace dir (used when WORKSPACE points here).
+workspace/*
+!workspace/.gitkeep
+
+# Local environment with potentially-sensitive values.
+.env

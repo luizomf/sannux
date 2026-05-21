@@ -1,0 +1,71 @@
+# Misc
+gitbare
+
+# Git
+.git
+.gitmodules
+
+# Local env/secrets
+.env
+.env.*
+!.env.example
+
+# Local agent state and auth
+state
+state/
+
+# Local workspace bind mount
+workspace
+workspace/
+
+# Local Docker volumes/imports
+docker/volumes
+_swarm2
+
+# OS/editor noise
+.DS_Store
+._.DS_Store
+.idea
+.vscode
+*.swp
+
+# Python
+__pycache__
+**/__pycache__/
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+venv
+env
+dist
+build
+*.egg-info
+.coverage
+htmlcov
+
+# Node
+node_modules
+.npm
+.cache
+.parcel-cache
+.next
+.nuxt
+.output
+.svelte-kit
+dist
+
+# Logs/temp
+*.log
+logs
+temp
+tmp
+TEMP.md
+TMP.md
+[Tt][Ee][Mm][Pp].[Mm][Dd]
+[Tt][Mm][Pp].[Mm][Dd]
+
+# AI/model caches
+model_cache
+_data

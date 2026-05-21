@@ -1,0 +1,6 @@
+# Keep the build context minimal and do not send .env, generated keys, state,
+# workspaces, caches, or nested repositories to Docker.
+*
+!Dockerfile
+!sshd_config
+!sshd-entrypoint.sh

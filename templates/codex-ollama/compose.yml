@@ -1,0 +1,76 @@
+# templates/codex-ollama — service definition.
+#
+# Usage from this folder:
+#   install -m 0600 .env.example .env
+#   docker compose run --rm agent                          # launch Codex against Ollama
+#   docker compose run --rm agent --version                # codex with args
+#   docker compose run --rm --entrypoint bash agent        # interactive shell
+#   docker compose down -v                                 # stop + clean up
+
+services:
+  agent:
+    build:
+      context: .
+      args:
+        # Forwarded to the Dockerfile so the in-container `agent` user
+        # matches your host UID/GID. Sourced from .env.
+        USER_UID: ${USER_UID:-1000}
+        USER_GID: ${USER_GID:-1000}
+    image: sannux/codex-ollama:latest
+
+    # Use only local images
+    pull_policy: never
+
+    # Resource caps: not security; just limits for runaway commands.
+    # Tune via .env to your VPS size or Docker Desktop allocation.
+    mem_limit: ${MEM_LIMIT:-4g}
+    cpus: ${CPU_LIMIT:-4}
+    pids_limit: 512
+
+    volumes:
+      # Required bind mounts. Keep both host paths outside this repository:
+      # WORKSPACE_PATH is the project Codex can edit; AGENT_HOME_PATH is the
+      # persisted agent home with auth, config, history, logs, and memory.
+      - type: bind
+        source:
+          ${WORKSPACE_PATH:?Set WORKSPACE_PATH in .env to an absolute host path
+          outside this repo}
+        target: /workspace
+        bind:
+          create_host_path: false
+      - type: bind
+        source:
+          ${AGENT_HOME_PATH:?Set AGENT_HOME_PATH in .env to an absolute host
+          path outside this repo}
+        target: /home/agent
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./model_catalog.json
+        target: /opt/sannux/model_catalog.json
+        read_only: true
+        bind:
+          create_host_path: false
+
+    # Allows Linux containers to reach an Ollama server running on the Docker
+    # host through http://host.docker.internal:11434. If you use a LAN IP in
+    # OLLAMA_BASE_URL, this is harmless.
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+    # Terminal color hints for TUI agents.
+    environment:
+      TERM: ${SANNUX_TERM:-xterm-256color}
+      COLORTERM: ${SANNUX_COLORTERM:-truecolor}
+      FORCE_COLOR: ${SANNUX_FORCE_COLOR:-}
+
+    # Codex is a TUI; it needs a TTY and stdin attached.
+    stdin_open: true
+    tty: true
+    init: true
+
+    working_dir: /workspace
+
+    # The container is the sandbox boundary for this template. Run setup-host.sh
+    # first so /home/agent/.codex/config.toml points Codex at Ollama for both
+    # interactive and `codex exec` runs.

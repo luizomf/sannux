@@ -1,0 +1,7 @@
+# Build context kept minimal — the Dockerfile has no COPY/ADD instructions.
+# This also prevents accidental .env, state/, workspace/, caches, or nested
+# repositories from being sent to Docker during builds.
+#
+# If you start copying files into the image, add explicit `!path/to/file`
+# entries below instead of removing this blanket ignore.
+*

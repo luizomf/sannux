@@ -1,0 +1,54 @@
+{
+  "models": [
+    {
+      "slug": "local-model:8b",
+      "display_name": "local-model:8b",
+      "description": "Local open-weight model served through Ollama.",
+      "default_reasoning_level": "medium",
+      "supported_reasoning_levels": [
+        {
+          "effort": "none",
+          "description": "No extra reasoning budget."
+        },
+        {
+          "effort": "low",
+          "description": "Fast responses with lighter reasoning."
+        },
+        {
+          "effort": "medium",
+          "description": "Balances speed and reasoning depth for everyday tasks."
+        },
+        {
+          "effort": "high",
+          "description": "Greater reasoning depth for complex tasks."
+        }
+      ],
+      "shell_type": "shell_command",
+      "visibility": "list",
+      "supported_in_api": true,
+      "priority": 0,
+      "upgrade": null,
+      "base_instructions": "You are a coding agent running inside a container. Help the user work in the mounted workspace. Read relevant files before editing. Prefer small, safe changes. Use terminal tools carefully and explain blockers plainly.",
+      "model_messages": null,
+      "supports_reasoning_summaries": false,
+      "default_reasoning_summary": "none",
+      "reasoning_summary_format": "none",
+      "support_verbosity": true,
+      "default_verbosity": "medium",
+      "apply_patch_tool_type": "freeform",
+      "web_search_tool_type": "text_and_image",
+      "truncation_policy": {
+        "mode": "tokens",
+        "limit": 10000
+      },
+      "supports_parallel_tool_calls": false,
+      "supports_image_detail_original": false,
+      "context_window": 80000,
+      "max_context_window": 80000,
+      "auto_compact_token_limit": 60000,
+      "experimental_supported_tools": [],
+      "input_modalities": ["text"],
+      "supports_search_tool": false
+    }
+  ]
+}

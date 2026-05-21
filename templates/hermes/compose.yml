@@ -1,0 +1,113 @@
+# templates/hermes — service definition.
+#
+# Usage from this folder:
+#   install -m 0600 .env.example .env
+#   ./setup-host.sh
+#   docker compose run --rm agent setup                    # first-run wizard
+#   docker compose run --rm agent                          # launch Hermes
+#   docker compose --profile daemon up -d gateway          # 24/7 gateway + cron
+#   docker compose --profile daemon up -d dashboard        # dashboard UI
+#   docker compose run --rm agent --version                # hermes with args
+#   docker compose run --rm --entrypoint bash agent        # interactive shell
+#   docker compose down -v                                 # stop + clean up
+
+x-hermes-agent: &hermes-agent
+  build:
+    context: .
+    args:
+      # Forwarded to the Dockerfile so the in-container `agent` user
+      # matches your host UID/GID. Sourced from .env.
+      USER_UID: ${USER_UID:-1000}
+      USER_GID: ${USER_GID:-1000}
+  image: sannux/hermes:latest
+
+  # Resource caps: not security; just limits for runaway commands. Hermes can
+  # be heavier than the other templates, so the default memory cap is higher.
+  # Tune via .env to your VPS size or Docker Desktop allocation.
+  mem_limit: ${MEM_LIMIT:-8g}
+  cpus: ${CPU_LIMIT:-4}
+  pids_limit: 512
+
+  volumes:
+    # Required bind mounts. Keep both host paths outside this repository:
+    # WORKSPACE_PATH is the project Hermes can edit; AGENT_HOME_PATH is the
+    # persisted agent home with auth, config, history, logs, and memory.
+    - type: bind
+      source:
+        ${WORKSPACE_PATH:?Set WORKSPACE_PATH in .env to an absolute host path
+        outside this repo}
+      target: /workspace
+      bind:
+        create_host_path: false
+    - type: bind
+      source:
+        ${AGENT_HOME_PATH:?Set AGENT_HOME_PATH in .env to an absolute host path
+        outside this repo}
+      target: /home/agent
+      bind:
+        create_host_path: false
+
+  # The template .env is passed to the container. Keep it private and scoped to
+  # values this agent may see.
+  env_file:
+    - .env
+
+  # Terminal color hints for TUI agents.
+  environment:
+    TERM: ${SANNUX_TERM:-xterm-256color}
+    COLORTERM: ${SANNUX_COLORTERM:-truecolor}
+    FORCE_COLOR: ${SANNUX_FORCE_COLOR:-}
+
+  # Hermes is a TUI; it needs a TTY and stdin attached.
+  stdin_open: true
+  tty: true
+  init: true
+
+  working_dir: /workspace
+
+x-hermes-preview-ports: &hermes-preview-ports
+  - '${PORT_BIND_ADDRESS:-127.0.0.1}:${HOST_PORT_3000:-3000}:3000'
+  - '${PORT_BIND_ADDRESS:-127.0.0.1}:${HOST_PORT_8000:-8000}:8000'
+  - '${PORT_BIND_ADDRESS:-127.0.0.1}:${HOST_PORT_8080:-8080}:8080'
+
+x-hermes-dashboard-ports: &hermes-dashboard-ports
+  - '${PORT_BIND_ADDRESS:-127.0.0.1}:${HOST_PORT_DASHBOARD:-9119}:9119'
+
+services:
+  agent:
+    <<: *hermes-agent
+
+    # Hermes is a TUI; it needs a TTY and stdin attached.
+    stdin_open: true
+    tty: true
+
+  gateway:
+    <<: *hermes-agent
+    profiles: ['daemon']
+    # The gateway is the service used for Telegram/WhatsApp-style always-on
+    # access, so it publishes preview ports for apps it starts.
+    ports: *hermes-preview-ports
+    command:
+      - gateway
+      - run
+      - --replace
+      - --accept-hooks
+    restart: unless-stopped
+
+  dashboard:
+    <<: *hermes-agent
+    profiles: ['daemon']
+    # Hermes dashboard exposes config and API-key management. Compose binds the
+    # host side to localhost by default; keep it that way unless you add proper
+    # VPS firewall/reverse-proxy controls.
+    ports: *hermes-dashboard-ports
+    command:
+      - dashboard
+      - --host
+      - 0.0.0.0
+      - --port
+      - '9119'
+      - --no-open
+      - --insecure
+      - --skip-build
+    restart: unless-stopped

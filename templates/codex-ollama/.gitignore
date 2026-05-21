@@ -1,0 +1,4 @@
+# templates/codex-ollama — local artifacts.
+
+# Local environment with potentially-sensitive values.
+.env

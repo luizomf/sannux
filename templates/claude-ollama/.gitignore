@@ -1,0 +1,4 @@
+# templates/claude-ollama — local artifacts.
+
+# Local environment with potentially-sensitive values.
+.env

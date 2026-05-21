@@ -1,0 +1,66 @@
+# templates/gemini — service definition.
+#
+# Usage from this folder:
+#   install -m 0600 .env.example .env
+#   ./setup-host.sh
+#   docker compose build
+#   docker compose run --rm agent                          # launch Gemini
+#   docker compose run --rm agent --version                # gemini with args
+#   docker compose run --rm agent -p "..."                 # headless prompt
+#   docker compose run --rm --entrypoint bash agent        # interactive shell
+#   docker compose down -v                                 # stop + clean up
+
+services:
+  agent:
+    build:
+      context: .
+      args:
+        # Forwarded to the Dockerfile so the in-container `agent` user
+        # matches your host UID/GID. Sourced from .env.
+        USER_UID: ${USER_UID:-1000}
+        USER_GID: ${USER_GID:-1000}
+    image: sannux/gemini:latest
+
+    # Resource caps: not security; just limits for runaway commands.
+    # Tune via .env to your VPS size or Docker Desktop allocation.
+    mem_limit: ${MEM_LIMIT:-4g}
+    cpus: ${CPU_LIMIT:-4}
+    pids_limit: 512
+
+    volumes:
+      # Required bind mounts. Keep both host paths outside this repository:
+      # WORKSPACE_PATH is the project Gemini can edit; AGENT_HOME_PATH is the
+      # persisted agent home with auth, config, project registry, sessions,
+      # history, logs, and cache. Use ./setup-host.sh to create safe defaults.
+      - type: bind
+        source:
+          ${WORKSPACE_PATH:?Set WORKSPACE_PATH in .env to an absolute host path
+          outside this repo}
+        target: /workspace
+        bind:
+          create_host_path: false
+      - type: bind
+        source:
+          ${AGENT_HOME_PATH:?Set AGENT_HOME_PATH in .env to an absolute host
+          path outside this repo}
+        target: /home/agent
+        bind:
+          create_host_path: false
+
+    # The template .env is passed to the container. Keep it private and scoped to
+    # values this agent may see.
+    env_file:
+      - .env
+
+    # Terminal color hints for TUI agents.
+    environment:
+      TERM: ${SANNUX_TERM:-xterm-256color}
+      COLORTERM: ${SANNUX_COLORTERM:-truecolor}
+      FORCE_COLOR: ${SANNUX_FORCE_COLOR:-}
+
+    # Gemini is a TUI; it needs a TTY and stdin attached.
+    stdin_open: true
+    tty: true
+    init: true
+
+    working_dir: /workspace

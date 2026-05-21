@@ -1,0 +1,73 @@
+# templates/remote-dev — generic Remote SSH target.
+#
+# Usage from this folder:
+#   ./setup-host.sh                                      # easiest path
+#   docker compose --profile daemon up -d ssh            # start SSH
+#   ssh sannux-remote-dev                                # after setup-host.sh
+#   docker compose run --rm agent                        # non-root shell
+#   docker compose down -v                               # stop + clean up
+
+x-remote-dev: &remote-dev
+  build:
+    context: .
+    args:
+      REMOTE_USER: ${REMOTE_USER:-agent}
+      USER_UID: ${USER_UID:-1000}
+      USER_GID: ${USER_GID:-1000}
+  image: sannux/remote-dev:latest
+
+  mem_limit: ${MEM_LIMIT:-4g}
+  cpus: ${CPU_LIMIT:-4}
+  pids_limit: 512
+
+  volumes:
+    - type: bind
+      source:
+        ${WORKSPACE_PATH:?Set WORKSPACE_PATH in .env to an absolute host path
+        outside this repo}
+      target: /workspace
+      bind:
+        create_host_path: false
+    - type: bind
+      source:
+        ${AGENT_HOME_PATH:?Set AGENT_HOME_PATH in .env to an absolute host path
+        outside this repo}
+      target: /home/${REMOTE_USER:-agent}
+      bind:
+        create_host_path: false
+
+  tmpfs:
+    # Codex App's SSH remote bootstrap uses a Unix socket under this directory.
+    # Keep it off macOS bind mounts, which can reject chmod on socket files.
+    - /home/${REMOTE_USER:-agent}/.codex/app-server-control:uid=${USER_UID:-1000},gid=${USER_GID:-1000},mode=0700
+
+  env_file:
+    - .env
+
+  environment:
+    REMOTE_USER: ${REMOTE_USER:-agent}
+    TERM: ${SANNUX_TERM:-xterm-256color}
+    COLORTERM: ${SANNUX_COLORTERM:-truecolor}
+    FORCE_COLOR: ${SANNUX_FORCE_COLOR:-}
+
+  working_dir: /workspace
+  init: true
+
+services:
+  agent:
+    <<: *remote-dev
+    stdin_open: true
+    tty: true
+
+  ssh:
+    <<: *remote-dev
+    profiles: ['daemon']
+    user: root
+    ports:
+      - '${SSH_BIND_ADDRESS:-127.0.0.1}:${HOST_SSH_PORT:-2222}:22'
+      - '${PORT_BIND_ADDRESS:-127.0.0.1}:${HOST_PORT_3000:-3000}:3000'
+      - '${PORT_BIND_ADDRESS:-127.0.0.1}:${HOST_PORT_8000:-8000}:8000'
+      - '${PORT_BIND_ADDRESS:-127.0.0.1}:${HOST_PORT_8080:-8080}:8080'
+    command:
+      - /usr/local/bin/sannux-sshd
+    restart: unless-stopped

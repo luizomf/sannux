@@ -1,0 +1,23 @@
+Port 22
+ListenAddress 0.0.0.0
+
+HostKey __REMOTE_HOME__/.ssh/sshd_host_ed25519_key
+HostKey __REMOTE_HOME__/.ssh/sshd_host_rsa_key
+AuthorizedKeysFile .ssh/authorized_keys
+
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitEmptyPasswords no
+PermitRootLogin no
+AllowUsers __REMOTE_USER__
+
+AllowAgentForwarding no
+AllowTcpForwarding yes
+GatewayPorts no
+PermitTunnel no
+X11Forwarding no
+
+UsePAM no
+PrintMotd no
+Subsystem sftp internal-sftp
