@@ -59,6 +59,30 @@ require_absolute_path() {
   esac
 }
 
+require_absolute_container_path() {
+  local key="$1"
+  local value="$2"
+  case "${value}" in
+    /*) ;;
+    *) fail "${key} must be an absolute in-container path: ${value}" ;;
+  esac
+}
+
+require_existing_host_file_if_set() {
+  local key="$1"
+  local value="$2"
+  local resolved_path
+
+  [[ -z "${value}" ]] && return 0
+
+  case "${value}" in
+    /*) resolved_path="${value}" ;;
+    *) resolved_path="${template_dir}/${value}" ;;
+  esac
+
+  [[ -f "${resolved_path}" ]] || fail "${key} must point to an existing file. Relative paths are resolved from ${template_dir}: ${value}"
+}
+
 reject_unsafe_path() {
   local key="$1"
   local value="$2"
@@ -147,6 +171,7 @@ codex_model_provider_name="$(get_env_value CODEX_MODEL_PROVIDER_NAME)"
 codex_profile="$(get_env_value CODEX_PROFILE)"
 codex_personality="$(get_env_value CODEX_PERSONALITY)"
 codex_reasoning="$(get_env_value CODEX_MODEL_REASONING_EFFORT)"
+codex_catalog_host_path="$(get_env_value CODEX_MODEL_CATALOG_HOST_PATH)"
 codex_catalog_path="$(get_env_value CODEX_MODEL_CATALOG_PATH)"
 codex_approval_policy="$(get_env_value CODEX_APPROVAL_POLICY)"
 codex_sandbox_mode="$(get_env_value CODEX_SANDBOX_MODE)"
@@ -162,14 +187,17 @@ codex_model_provider_name="${codex_model_provider_name:-Ollama}"
 codex_profile="${codex_profile:-local-model-8b}"
 codex_personality="${codex_personality:-friendly}"
 codex_reasoning="${codex_reasoning:-high}"
+codex_catalog_host_path="${codex_catalog_host_path:-}"
 codex_catalog_path="${codex_catalog_path:-/opt/sannux/model_catalog.json}"
 codex_approval_policy="${codex_approval_policy:-never}"
 codex_sandbox_mode="${codex_sandbox_mode:-danger-full-access}"
 
 require_absolute_path WORKSPACE_PATH "${workspace_path}"
 require_absolute_path AGENT_HOME_PATH "${agent_home_path}"
+require_absolute_container_path CODEX_MODEL_CATALOG_PATH "${codex_catalog_path}"
 reject_unsafe_path WORKSPACE_PATH "${workspace_path}"
 reject_unsafe_path AGENT_HOME_PATH "${agent_home_path}"
+require_existing_host_file_if_set CODEX_MODEL_CATALOG_HOST_PATH "${codex_catalog_host_path}"
 require_choice CODEX_MODEL_REASONING_EFFORT "${codex_reasoning}" none low medium high xhigh
 require_choice CODEX_APPROVAL_POLICY "${codex_approval_policy}" untrusted on-request never
 require_choice CODEX_SANDBOX_MODE "${codex_sandbox_mode}" read-only workspace-write danger-full-access
@@ -191,6 +219,7 @@ set_env_value CODEX_MODEL_PROVIDER_NAME "${codex_model_provider_name}"
 set_env_value CODEX_PROFILE "${codex_profile}"
 set_env_value CODEX_PERSONALITY "${codex_personality}"
 set_env_value CODEX_MODEL_REASONING_EFFORT "${codex_reasoning}"
+set_env_value CODEX_MODEL_CATALOG_HOST_PATH "${codex_catalog_host_path}"
 set_env_value CODEX_MODEL_CATALOG_PATH "${codex_catalog_path}"
 set_env_value CODEX_APPROVAL_POLICY "${codex_approval_policy}"
 set_env_value CODEX_SANDBOX_MODE "${codex_sandbox_mode}"
@@ -228,3 +257,5 @@ echo "Agent home: ${agent_home_path}"
 echo "Codex config: ${codex_config}"
 echo "Ollama endpoint: ${ollama_base_url}"
 echo "Model: ${codex_model}"
+echo "Model catalog host file: ${codex_catalog_host_path:-./model_catalog.json}"
+echo "Model catalog container path: ${codex_catalog_path}"

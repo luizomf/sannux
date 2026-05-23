@@ -773,17 +773,29 @@ Use o IP real da máquina que executa o Ollama.
 A CLI do Codex espera metadados do modelo: janela de contexto, suporte a
 raciocínio, suporte a ferramentas e flags de comportamento relacionadas. Os
 nomes dos modelos locais do Ollama não estão no catálogo integrado do Codex,
-então `templates/codex-ollama/` inclui:
+então `templates/codex-ollama/` inclui um catálogo padrão:
 
 ```txt
 model_catalog.json
 ```
 
-O arquivo compose monta isso como somente leitura em:
+O arquivo compose monta um arquivo de catálogo como somente leitura:
 
 ```txt
-/opt/sannux/model_catalog.json
+${CODEX_MODEL_CATALOG_HOST_PATH:-./model_catalog.json} -> ${CODEX_MODEL_CATALOG_PATH:-/opt/sannux/model_catalog.json}
 ```
+
+Deixe `CODEX_MODEL_CATALOG_HOST_PATH` vazio para usar o arquivo incluído. Defina
+esse valor com um caminho absoluto do host quando o catálogo for pessoal ou
+específico da máquina:
+
+```env
+CODEX_MODEL_CATALOG_HOST_PATH=/srv/example-data/model-catalogs/ollama_models.json
+CODEX_MODEL_CATALOG_PATH=/opt/sannux/model_catalog.json
+```
+
+`CODEX_MODEL_CATALOG_PATH` é o caminho dentro do contêiner e o valor escrito na
+config do Codex. Ele não é o caminho do arquivo no host.
 
 O mesmo template também inclui `codex-config.toml.template`. Rode:
 
@@ -801,7 +813,7 @@ Se você alterar:
 CODEX_MODEL=local-model:8b
 ```
 
-também atualize o `slug` correspondente em `model_catalog.json`.
+também atualize o `slug` correspondente no arquivo de catálogo selecionado.
 
 Se o catálogo disser que o modelo tem uma janela de contexto maior do que o
 Ollama realmente oferece, o Codex planejará em torno de uma janela de contexto
@@ -1125,6 +1137,7 @@ Valores importantes de `.env`:
 ```env
 OLLAMA_BASE_URL=http://192.0.2.50:11434/v1
 CODEX_MODEL=local-model:8b
+CODEX_MODEL_CATALOG_HOST_PATH=/srv/example-data/model-catalogs/ollama_models.json
 ```
 
 Rode `just setup codex-ollama` depois de editar `.env`; isso escreve a config
@@ -1132,9 +1145,10 @@ persistida usada pela TUI e pelo `codex exec`. Para runs one-shot, use a mesma
 agent home ou monte uma `/home/agent` temporária com apenas a pasta `.codex` que
 você aceita expor.
 
-Se o modelo mudar, atualize o `model_catalog.json`.
-Esse arquivo diz ao Codex quais recursos aquele modelo local tem. O `slug` deve
-bater com o nome do modelo usado em `CODEX_MODEL`.
+Se o modelo mudar, atualize o catálogo selecionado por
+`CODEX_MODEL_CATALOG_HOST_PATH`, ou o `model_catalog.json` da template quando
+usar o padrão. Esse arquivo diz ao Codex quais recursos aquele modelo local tem.
+O `slug` deve bater com o nome do modelo usado em `CODEX_MODEL`.
 
 ### `claude-code`
 

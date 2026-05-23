@@ -220,7 +220,6 @@ class ContractCheck:
             r"[\s\S]*?bind:\s*\n\s*create_host_path:\s*false",
             "AGENT_HOME_PATH bind mount guarded by create_host_path: false",
         )
-
     def check_codex_env_example(self) -> None:
         relative = "templates/codex/.env.example"
         text = self.read(relative)
@@ -234,7 +233,6 @@ class ContractCheck:
                 rf"^{key}=$",
                 f"{key} present and intentionally blank",
             )
-
     def check_codex_setup_script(self) -> None:
         relative = "templates/codex/setup-host.sh"
         script_path = self.path(relative)
@@ -297,6 +295,15 @@ class ContractCheck:
             r"[\s\S]*?bind:\s*\n\s*create_host_path:\s*false",
             "AGENT_HOME_PATH bind mount guarded by create_host_path: false",
         )
+        self.require_regex(
+            relative,
+            text,
+            r"source:\s*\$\{CODEX_MODEL_CATALOG_HOST_PATH:-\./model_catalog\.json\}"
+            r"[\s\S]*?target:\s*\$\{CODEX_MODEL_CATALOG_PATH:-/opt/sannux/model_catalog\.json\}"
+            r"[\s\S]*?read_only:\s*true"
+            r"[\s\S]*?bind:\s*\n\s*create_host_path:\s*false",
+            "configurable read-only model catalog bind mount guarded by create_host_path: false",
+        )
 
     def check_codex_ollama_env_example(self) -> None:
         relative = "templates/codex-ollama/.env.example"
@@ -311,6 +318,18 @@ class ContractCheck:
                 rf"^{key}=$",
                 f"{key} present and intentionally blank",
             )
+        self.require_regex(
+            relative,
+            text,
+            r"^CODEX_MODEL_CATALOG_HOST_PATH=$",
+            "CODEX_MODEL_CATALOG_HOST_PATH present and intentionally blank",
+        )
+        self.require_contains(
+            relative,
+            text,
+            "CODEX_MODEL_CATALOG_PATH=/opt/sannux/model_catalog.json",
+            "in-container model catalog path default",
+        )
 
     def check_claude_ollama_readmes(self) -> None:
         checks = [

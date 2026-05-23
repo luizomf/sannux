@@ -759,17 +759,28 @@ Use the real IP of the machine that runs Ollama.
 
 Codex CLI expects model metadata: context window, reasoning support, tool
 support, and related behavior flags. Local Ollama model names are not in Codex's
-built-in catalog, so `templates/codex-ollama/` ships:
+built-in catalog, so `templates/codex-ollama/` ships a default catalog:
 
 ```txt
 model_catalog.json
 ```
 
-The compose file mounts it read-only at:
+The compose file mounts a catalog file read-only:
 
 ```txt
-/opt/sannux/model_catalog.json
+${CODEX_MODEL_CATALOG_HOST_PATH:-./model_catalog.json} -> ${CODEX_MODEL_CATALOG_PATH:-/opt/sannux/model_catalog.json}
 ```
+
+Leave `CODEX_MODEL_CATALOG_HOST_PATH` empty to use the shipped file. Set it to
+an absolute host file path when the catalog is personal or machine-specific:
+
+```env
+CODEX_MODEL_CATALOG_HOST_PATH=/srv/example-data/model-catalogs/ollama_models.json
+CODEX_MODEL_CATALOG_PATH=/opt/sannux/model_catalog.json
+```
+
+`CODEX_MODEL_CATALOG_PATH` is the path inside the container and the value
+written into Codex config. It is not the host file path.
 
 The same template also ships `codex-config.toml.template`. Run:
 
@@ -786,7 +797,7 @@ If you change:
 CODEX_MODEL=local-model:8b
 ```
 
-also update the matching `slug` in `model_catalog.json`.
+also update the matching `slug` in the selected catalog file.
 
 If the catalog says the model has a larger context than Ollama actually serves,
 Codex will plan around a context window that does not really exist. Keep the
@@ -1100,6 +1111,7 @@ Important `.env` values:
 ```env
 OLLAMA_BASE_URL=http://192.0.2.50:11434/v1
 CODEX_MODEL=local-model:8b
+CODEX_MODEL_CATALOG_HOST_PATH=/srv/example-data/model-catalogs/ollama_models.json
 ```
 
 Run `just setup codex-ollama` after editing `.env`; it writes the persisted
@@ -1107,7 +1119,9 @@ Codex config used by the TUI and by `codex exec`. For one-shot runs, either use
 the same agent home or mount a temporary `/home/agent` with only the `.codex`
 folder you accept exposing.
 
-If the model changes, update `model_catalog.json`.
+If the model changes, update the catalog selected by
+`CODEX_MODEL_CATALOG_HOST_PATH`, or the template's `model_catalog.json` when
+using the default.
 
 ### `claude-code`
 

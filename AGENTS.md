@@ -43,14 +43,15 @@ Prefer simple, inspectable Docker and shell code over clever abstractions.
 
 ## Workflow
 
-Use the workflow that fits the change.
+All repository work must use the full collaboration workflow, even for small
+documentation tweaks:
 
-- For preserved project work: issue -> branch -> small conventional commits ->
-  PR -> merge.
-- For small docs tweaks, local experiments, or throwaway sandbox work: a branch
-  and PR are optional. Keep the handoff clear.
-- Before larger feature work, check open issues first. Reuse an existing issue
-  when it matches the request; otherwise create or propose one.
+- issue -> branch -> small conventional commits -> PR -> squash merge -> delete
+  the branch.
+- Check open issues before starting work. Reuse an existing issue when it
+  matches the request; otherwise create or propose one.
+- Keep branches focused on one issue and one task.
+- Finish accepted work by squash-merging the PR and deleting the branch.
 - One focused task per session is the default.
 
 Commit style:

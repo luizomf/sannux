@@ -34,6 +34,12 @@ OLLAMA_BASE_URL=http://host.docker.internal:11434/v1
 CODEX_MODEL=local-model:8b
 ```
 
+Opcionalmente, aponte o template para seu próprio arquivo de catálogo:
+
+```env
+CODEX_MODEL_CATALOG_HOST_PATH=/srv/example-data/model-catalogs/ollama_models.json
+```
+
 Se `WORKSPACE_PATH` e `AGENT_HOME_PATH` ficarem vazios, o `setup-host.sh` usa
 este fallback:
 
@@ -160,13 +166,28 @@ público.
 ## Catálogo de modelos
 
 O Codex precisa de metadados para nomes de modelos locais do Ollama. Este
-template monta:
+template inclui um catálogo padrão pequeno e monta um arquivo de catálogo como
+somente leitura:
 
 ```txt
-./model_catalog.json -> /opt/sannux/model_catalog.json
+${CODEX_MODEL_CATALOG_HOST_PATH:-./model_catalog.json} -> ${CODEX_MODEL_CATALOG_PATH:-/opt/sannux/model_catalog.json}
 ```
 
-Se você mudar `CODEX_MODEL`, mantenha `model_catalog.json` alinhado.
+Deixe `CODEX_MODEL_CATALOG_HOST_PATH` vazio para usar o
+`./model_catalog.json` versionado. Defina esse valor com um caminho absoluto do
+host quando o catálogo for pessoal ou específico da máquina:
+
+```env
+CODEX_MODEL_CATALOG_HOST_PATH=/srv/example-data/model-catalogs/ollama_models.json
+CODEX_MODEL_CATALOG_PATH=/opt/sannux/model_catalog.json
+```
+
+`CODEX_MODEL_CATALOG_PATH` é o caminho dentro do contêiner escrito na config do
+Codex. Não coloque o caminho do host nele. O Compose usa
+`create_host_path: false`, então um catálogo customizado ausente falha em vez de
+ser criado silenciosamente.
+
+Se você mudar `CODEX_MODEL`, mantenha o catálogo selecionado alinhado.
 
 ## Modelo de permissão
 
@@ -197,8 +218,9 @@ agente que você aceita expor para aquele run.
 
 ## Personalizar
 
-Edite `Dockerfile`, `compose.yml`, `model_catalog.json` ou
-`codex-config.toml.template` diretamente. Depois de alterar a imagem:
+Edite `Dockerfile`, `compose.yml` ou `codex-config.toml.template` diretamente.
+Para metadados pessoais de modelo, prefira `CODEX_MODEL_CATALOG_HOST_PATH` em
+vez de editar o `model_catalog.json` versionado. Depois de alterar a imagem:
 
 ```bash
 docker compose build --no-cache

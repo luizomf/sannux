@@ -46,8 +46,10 @@ services:
         bind:
           create_host_path: false
       - type: bind
-        source: ./model_catalog.json
-        target: /opt/sannux/model_catalog.json
+        # Leave CODEX_MODEL_CATALOG_HOST_PATH empty to use the template catalog,
+        # or point it at a personal catalog file outside this repository.
+        source: ${CODEX_MODEL_CATALOG_HOST_PATH:-./model_catalog.json}
+        target: ${CODEX_MODEL_CATALOG_PATH:-/opt/sannux/model_catalog.json}
         read_only: true
         bind:
           create_host_path: false
