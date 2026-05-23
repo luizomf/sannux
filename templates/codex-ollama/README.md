@@ -34,6 +34,12 @@ OLLAMA_BASE_URL=http://host.docker.internal:11434/v1
 CODEX_MODEL=local-model:8b
 ```
 
+Optionally, point the template at your own model catalog file:
+
+```env
+CODEX_MODEL_CATALOG_HOST_PATH=/srv/example-data/model-catalogs/ollama_models.json
+```
+
 If `WORKSPACE_PATH` and `AGENT_HOME_PATH` stay empty, `setup-host.sh` uses this
 fallback:
 
@@ -157,13 +163,27 @@ Make the app listen on `0.0.0.0` inside the container. On a VPS, expose
 
 ## Model catalog
 
-Codex needs model metadata for local Ollama model names. This template mounts:
+Codex needs model metadata for local Ollama model names. This template ships a
+small default catalog and mounts a catalog file read-only:
 
 ```txt
-./model_catalog.json -> /opt/sannux/model_catalog.json
+${CODEX_MODEL_CATALOG_HOST_PATH:-./model_catalog.json} -> ${CODEX_MODEL_CATALOG_PATH:-/opt/sannux/model_catalog.json}
 ```
 
-If you change `CODEX_MODEL`, keep `model_catalog.json` aligned.
+Leave `CODEX_MODEL_CATALOG_HOST_PATH` empty to use the tracked
+`./model_catalog.json`. Set it to an absolute host file path when the catalog is
+personal or machine-specific:
+
+```env
+CODEX_MODEL_CATALOG_HOST_PATH=/srv/example-data/model-catalogs/ollama_models.json
+CODEX_MODEL_CATALOG_PATH=/opt/sannux/model_catalog.json
+```
+
+`CODEX_MODEL_CATALOG_PATH` is the in-container path written into Codex config.
+Do not put the host path there. Compose uses `create_host_path: false`, so a
+missing custom catalog file fails instead of being created silently.
+
+If you change `CODEX_MODEL`, keep the selected catalog aligned.
 
 ## Permission model
 
@@ -193,8 +213,9 @@ are willing to expose to that run.
 
 ## Customize
 
-Edit `Dockerfile`, `compose.yml`, `model_catalog.json`, or
-`codex-config.toml.template` directly. After changing the image:
+Edit `Dockerfile`, `compose.yml`, or `codex-config.toml.template` directly. For
+personal model metadata, prefer `CODEX_MODEL_CATALOG_HOST_PATH` over editing the
+tracked `model_catalog.json`. After changing the image:
 
 ```bash
 docker compose build --no-cache
