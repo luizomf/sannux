@@ -8,6 +8,14 @@ This template keeps Hermes inside a Debian-slim container with a non-root user,
 your code mounted at `/workspace`, and Hermes auth/config/state persisted to an
 explicit host agent home.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## What this template gives you
 
 - `Dockerfile`: Hermes Agent plus common Linux development tools.
@@ -91,8 +99,8 @@ Hermes interactive wizard for you.
 
 Hermes stores important user-level state under `/home/agent/.hermes/`: provider
 auth, config, sessions, logs, memory, tool settings, hooks, skills, gateway
-platform config, allowlists, cron/webhook state, cache, and other runtime
-state. Treat this directory as private.
+platform config, allowlists, cron/webhook state, cache, and other runtime state.
+Treat this directory as private.
 
 This persistence is the point of Hermes, not just an implementation detail.
 Hermes is designed to improve through memory, session recall, and reusable
@@ -312,8 +320,8 @@ Model name: router:example-model-router
 ```
 
 Or use a specific model slug instead of `router:...`. If you keep the key in
-`.env`, name it `MODEL_ACCESS_KEY` and reference it from
-`~/.hermes/config.yaml` for auxiliary tasks.
+`.env`, name it `MODEL_ACCESS_KEY` and reference it from `~/.hermes/config.yaml`
+for auxiliary tasks.
 
 The important idea is not the specific endpoint vendor. It is that the expensive
 main model, cheap compression/session-search model, MCP model, and fallback can
@@ -392,8 +400,9 @@ Hermes is a Python codebase with a wide surface area, not a single npm CLI.
 - `uv` plus Python 3.11, managed by the Hermes installer.
 - Hermes' curated `[all]` extra plus `[messaging]`, so the gateway has Telegram,
   Discord, and Slack adapter dependencies available at runtime.
-- Built dashboard frontend at `/usr/local/lib/hermes-agent/hermes_cli/web_dist/`,
-  so `hermes dashboard --skip-build` works in Docker.
+- Built dashboard frontend at
+  `/usr/local/lib/hermes-agent/hermes_cli/web_dist/`, so
+  `hermes dashboard --skip-build` works in Docker.
 - `ffmpeg`, `build-essential`, `python3-dev`, `libffi-dev` for Hermes voice,
   transcription, and native Python wheels.
 - CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`.
@@ -501,8 +510,9 @@ RUN cd /usr/local/lib/hermes-agent \
 
 If you need another upstream Hermes extra, add another `--extra name` there and
 verify it with an import or command in the same `RUN` block. If you need an
-arbitrary Python package that is not in Hermes' lockfile, pin it deliberately and
-understand that it is outside Hermes' hash-locked dependency set.
+arbitrary Python package that is not in Hermes' lockfile, pin it deliberately
+and understand that it is outside Hermes' hash-locked dependency set.
 
-Do not rely on `pip install` inside `docker compose run --rm --entrypoint bash
-agent`: the Hermes venv is image-managed and root-owned on purpose.
+Do not rely on `pip install` inside
+`docker compose run --rm --entrypoint bash agent`: the Hermes venv is
+image-managed and root-owned on purpose.

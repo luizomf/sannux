@@ -1,7 +1,6 @@
 # opencode
 
-[OpenCode](https://opencode.ai/docs/) running in a Debian-slim Docker
-container.
+[OpenCode](https://opencode.ai/docs/) running in a Debian-slim Docker container.
 
 This template is intentionally simple: configure one persistent workspace and
 one persistent agent home, authenticate OpenCode once, then choose whether each
@@ -10,11 +9,19 @@ run is interactive, persistent one-shot, or ephemeral one-shot.
 Real credentialed OpenCode runs have not been tested yet; PRs with verified
 provider-specific notes are welcome.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## What this template gives you
 
 - `Dockerfile`: OpenCode CLI plus common Linux development tools.
-- `compose.yml`: Docker Compose service that mounts your project at
-  `/workspace` and the agent home at `/home/agent`.
+- `compose.yml`: Docker Compose service that mounts your project at `/workspace`
+  and the agent home at `/home/agent`.
 - `setup-host.sh`: creates the host folders, writes safe `.env` defaults, and
   prepares OpenCode config/data directories.
 
@@ -208,9 +215,9 @@ docker compose --project-directory "$template_dir" run \
   run "Summarize the mounted project."
 ```
 
-If you rely on `opencode auth login`, `/connect`, MCP OAuth, plugins, skills,
-or global OpenCode config from the persistent home, copy only the state you
-accept exposing to the run:
+If you rely on `opencode auth login`, `/connect`, MCP OAuth, plugins, skills, or
+global OpenCode config from the persistent home, copy only the state you accept
+exposing to the run:
 
 ```bash
 persistent_home=/path/to/agent-homes/opencode
@@ -225,8 +232,8 @@ cp -R "$persistent_home/.local/share/opencode" "$tmp_home/.local/share/opencode"
 Short warning: Docker `-v` can create missing host folders. Create and inspect
 the folders yourself when the path matters.
 
-Another warning: `.config/opencode` and `.local/share/opencode` may contain
-real provider credentials, MCP OAuth tokens, global config, plugins, skills,
+Another warning: `.config/opencode` and `.local/share/opencode` may contain real
+provider credentials, MCP OAuth tokens, global config, plugins, skills,
 sessions, snapshots, history, cache, logs, or other private state. Copy them
 only into runs where you accept exposing that state.
 

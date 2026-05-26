@@ -5,6 +5,14 @@ OpenAI Codex CLI running in Docker.
 This template is intentionally small: configure one persistent agent home, test
 it once in the TUI, then change only the Codex arguments for each run.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## What this template gives you
 
 - `Dockerfile`: Codex CLI plus common Linux development tools.
@@ -68,10 +76,10 @@ Choose one auth path:
 - API key: set `OPENAI_API_KEY` in `.env`, then run the TUI or one-shot commands
   normally. No Codex login is needed. If you do not set it ahead of time, the
   Codex prompt can also ask you to provide an API key inside the container.
-- OAuth/subscription login: leave `OPENAI_API_KEY` unset and let Codex prompt for
-  login on the first TUI run. Inside Docker, choose **Sign in with Device Code**.
-  Do not choose **Sign in with ChatGPT** in the container: that path assumes a
-  local desktop browser and does not fit this Docker image.
+- OAuth/subscription login: leave `OPENAI_API_KEY` unset and let Codex prompt
+  for login on the first TUI run. Inside Docker, choose **Sign in with Device
+  Code**. Do not choose **Sign in with ChatGPT** in the container: that path
+  assumes a local desktop browser and does not fit this Docker image.
 - Headless OAuth/subscription login: run this once on a machine without a
   browser:
 
@@ -79,8 +87,8 @@ Choose one auth path:
 docker compose run --rm agent login --device-auth
 ```
 
-OAuth tokens land in `${AGENT_HOME_PATH}/.codex/auth.json` on your host, so later
-`docker compose run --rm agent` calls skip authentication.
+OAuth tokens land in `${AGENT_HOME_PATH}/.codex/auth.json` on your host, so
+later `docker compose run --rm agent` calls skip authentication.
 
 ## Scenarios
 
@@ -98,7 +106,8 @@ Other templates follow the same idea for other harnesses or providers, such as
 
 For this harness, provider auth is either `OPENAI_API_KEY` from `.env` or OAuth
 login state under `.codex`. API key users can run without any pre-seeded
-`.codex` auth. OAuth users should keep the persistent agent home for login state.
+`.codex` auth. OAuth users should keep the persistent agent home for login
+state.
 
 The agent home can also store config, sessions, logs, cache, memory, shell
 history, MCP config, plugins, and other runtime state under `/home/agent`.
@@ -203,8 +212,8 @@ and CLI config live there.
 
 ## Preview ports
 
-If the agent starts an app inside the container, publish only the port needed for
-that run:
+If the agent starts an app inside the container, publish only the port needed
+for that run:
 
 ```bash
 docker compose run --rm -p 127.0.0.1:3001:3000 agent
@@ -237,8 +246,8 @@ Do not casually mount:
 - global Git or GitHub config;
 - the Docker socket.
 
-Mount the project folder the agent should edit, and mount only the agent data you
-are willing to expose to that run.
+Mount the project folder the agent should edit, and mount only the agent data
+you are willing to expose to that run.
 
 ## What's inside
 
@@ -254,9 +263,9 @@ are willing to expose to that run.
 - `${WORKSPACE_PATH}` (host) -> `/workspace` (container): your project.
 - `${AGENT_HOME_PATH}` (host) -> `/home/agent` (container): Codex state.
 
-Both paths should live outside the `sannux` checkout. The Compose bind mounts use
-`create_host_path: false`, so missing directories fail early instead of being
-created in the wrong place.
+Both paths should live outside the `sannux` checkout. The Compose bind mounts
+use `create_host_path: false`, so missing directories fail early instead of
+being created in the wrong place.
 
 ## Resource limits
 

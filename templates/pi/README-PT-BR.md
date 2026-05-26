@@ -1,7 +1,7 @@
 # pi
 
-[Pi Coding Agent](https://pi.dev/docs/latest/quickstart) rodando em um
-contêiner Docker `debian-slim`.
+[Pi Coding Agent](https://pi.dev/docs/latest/quickstart) rodando em um contêiner
+Docker `debian-slim`.
 
 Este template é pequeno de propósito: configure um workspace persistente e um
 home persistente do Pi, autentique uma vez, e depois escolha se cada execução
@@ -10,6 +10,14 @@ vai ser interativa, one-shot persistente ou one-shot efêmera.
 Runs reais autenticados com Pi não foram testados nesta passada; o contrato de
 CLI abaixo vem da documentação oficial do Pi e do comportamento local de
 `pi --help`.
+
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
 
 ## O que este template entrega
 
@@ -70,8 +78,8 @@ just run pi
 O template é o ambiente específico do harness: `pi` significa Pi Coding Agent
 rodando com seu próprio workspace e seu próprio agent home isolado.
 
-Outros templates seguem a mesma ideia para outros harnesses, como Codex,
-Claude, Gemini, Hermes ou opencode.
+Outros templates seguem a mesma ideia para outros harnesses, como Codex, Claude,
+Gemini, Hermes ou opencode.
 
 ### 2. Config inicial persistente
 
@@ -118,10 +126,10 @@ just run pi
 Esse run fica ativo até você sair do Pi. Ele usa o workspace persistente e o
 agent home persistente configurados no `.env`.
 
-O Pi carrega arquivos de contexto no startup a partir do diretório global do
-Pi, dos diretórios pais e do workspace atual. Instruções de projeto podem ficar
-em `/workspace/AGENTS.md` ou `/workspace/CLAUDE.md`; instruções globais podem
-ficar em `${AGENT_HOME_PATH}/.pi/agent/AGENTS.md`.
+O Pi carrega arquivos de contexto no startup a partir do diretório global do Pi,
+dos diretórios pais e do workspace atual. Instruções de projeto podem ficar em
+`/workspace/AGENTS.md` ou `/workspace/CLAUDE.md`; instruções globais podem ficar
+em `${AGENT_HOME_PATH}/.pi/agent/AGENTS.md`.
 
 ### 4. Daemon persistente
 
@@ -234,8 +242,8 @@ docker compose run --rm -p 127.0.0.1:3001:3000 agent
 
 Isso mapeia a porta `3001` do host para a porta `3000` do contêiner naquela
 sessão. Faça o app dentro do contêiner escutar em `0.0.0.0`. Em uma VPS, use
-`0.0.0.0:PORTA_HOST:PORTA_CONTAINER` apenas quando você realmente quiser expor
-o app.
+`0.0.0.0:PORTA_HOST:PORTA_CONTAINER` apenas quando você realmente quiser expor o
+app.
 
 ## Ollama / modelos locais
 
@@ -263,8 +271,8 @@ Exemplo mínimo para um servidor Ollama no host Docker:
 }
 ```
 
-O campo `apiKey` é exigido pelo formato de configuração de modelos do Pi, mas
-o Ollama ignora o valor.
+O campo `apiKey` é exigido pelo formato de configuração de modelos do Pi, mas o
+Ollama ignora o valor.
 
 Se o Ollama estiver em outra máquina da sua LAN, use esse IP no lugar:
 
@@ -343,9 +351,9 @@ real e histórico de sessão.
 
 ## Notas de segurança
 
-A documentação do Pi é direta: não há popups de permissão por padrão. Ele
-espera que você use um contêiner, construa seu próprio fluxo de confirmação ou
-adicione extensões se precisar de controles mais rígidos.
+A documentação do Pi é direta: não há popups de permissão por padrão. Ele espera
+que você use um contêiner, construa seu próprio fluxo de confirmação ou adicione
+extensões se precisar de controles mais rígidos.
 
 Este template dá ao Pi uma casa pequena:
 

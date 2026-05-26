@@ -6,6 +6,14 @@ OpenAI-compatible `/v1` endpoint.
 This template is intentionally small: configure one persistent agent home, test
 it once in the TUI, then change only the Codex arguments for each run.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## What this template gives you
 
 - `Dockerfile`: Codex CLI plus common Linux development tools.
@@ -119,7 +127,8 @@ printf '%s\n' "Summarize this project." | \
 ```
 
 This is simple, but the run can read and write the full persistent
-`AGENT_HOME_PATH`: config, auth, cache, logs, history, memory, and runtime state.
+`AGENT_HOME_PATH`: config, auth, cache, logs, history, memory, and runtime
+state.
 
 ### 6. One-shot run with ephemeral home
 
@@ -151,8 +160,8 @@ sensitive data"; it is "only the minimum you accept exposing for this run."
 
 ## Preview ports
 
-If the agent starts an app inside the container, publish only the port needed for
-that run:
+If the agent starts an app inside the container, publish only the port needed
+for that run:
 
 ```bash
 docker compose run --rm -p 127.0.0.1:3001:3000 agent
@@ -208,8 +217,8 @@ Do not casually mount:
 - global Git or GitHub config;
 - the Docker socket.
 
-Mount the project folder the agent should edit, and mount only the agent data you
-are willing to expose to that run.
+Mount the project folder the agent should edit, and mount only the agent data
+you are willing to expose to that run.
 
 ## Customize
 

@@ -24,18 +24,24 @@ Each template lives in `templates/<template>/` and is self-contained. You can
 clone the whole repo and use the root `justfile`, or copy one template folder to
 a VPS and use plain Docker Compose.
 
+## Vídeo (PT-BR 🇧🇷)
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## Core concepts
 
 These words have specific meanings in this repo:
 
 - **Template**: a reusable environment definition: Dockerfile, Compose service,
-  tools, entrypoint, resource limits, and default wiring. Examples:
-  `codex`, `codex-ollama`, `claude-code`, and `remote-dev`.
-- **Initial persistent config**: the first working agent home for a template.
-  It usually comes from `.env` plus a setup script.
+  tools, entrypoint, resource limits, and default wiring. Examples: `codex`,
+  `codex-ollama`, `claude-code`, and `remote-dev`.
+- **Initial persistent config**: the first working agent home for a template. It
+  usually comes from `.env` plus a setup script.
 - **Run**: one concrete execution of a template, with a workspace, an agent
-  home, a command, logs, and an exit status. A run can be interactive,
-  one-shot, scheduled, or long-running.
+  home, a command, logs, and an exit status. A run can be interactive, one-shot,
+  scheduled, or long-running.
 - **Agent home**: the host directory mounted at `/home/agent` for a run. It is
   where the CLI can write runtime state such as auth, config, sessions, logs,
   cache, memory, and local history.
@@ -138,10 +144,10 @@ separate, and make the risky path explicit.
 
 ### Why not Docker Sandboxes (`sbx`)?
 
-[Docker Sandboxes](https://docs.docker.com/ai/sandboxes/) is a good fit when
-you want stronger isolation for autonomous agents: it runs sandboxes in
-microVMs, gives each sandbox its own Docker daemon, and adds policy and
-credential handling around network access.
+[Docker Sandboxes](https://docs.docker.com/ai/sandboxes/) is a good fit when you
+want stronger isolation for autonomous agents: it runs sandboxes in microVMs,
+gives each sandbox its own Docker daemon, and adds policy and credential
+handling around network access.
 
 `sannux` does not try to replace that. It intentionally stays on plain Docker
 Compose templates because the project goal is different:
@@ -150,16 +156,16 @@ Compose templates because the project goal is different:
   Compose;
 - the runtime avoids the overhead of a per-sandbox VM plus a private Docker
   daemon;
-- there is no Docker account login, `sbx` installation, or KVM/hypervisor
-  setup in the happy path;
+- there is no Docker account login, `sbx` installation, or KVM/hypervisor setup
+  in the happy path;
 - agent homes, workspaces, ports, tools, and provider config stay explicit in
   files users can edit.
 
 The two approaches can also stack. You can use `sbx` as the stronger outer
 boundary and still run Docker/Compose workloads inside it when repeatable
-container packaging is useful. That is the better shape for critical repos,
-runs with many secrets, or unattended agents that need broad freedom. It buys
-more isolation, but also adds another runtime layer and more moving parts.
+container packaging is useful. That is the better shape for critical repos, runs
+with many secrets, or unattended agents that need broad freedom. It buys more
+isolation, but also adds another runtime layer and more moving parts.
 
 Use `sbx`, another microVM-based sandbox, or a remote disposable VM when you
 need a stronger boundary, especially if the agent must build and run nested
@@ -215,9 +221,9 @@ The workspace is what the agent is allowed to edit. The agent home is where the
 CLI stores login tokens, config, sessions, logs, memory, and local history. TUI
 sessions and manual login normally use a persistent agent home. Automation that
 runs with broad permissions should prefer an ephemeral agent home based on a
-known-good template config. If these folders live inside the repo, it becomes very easy to
-accidentally commit state, credentials, caches, or a repository inside a
-repository.
+known-good template config. If these folders live inside the repo, it becomes
+very easy to accidentally commit state, credentials, caches, or a repository
+inside a repository.
 
 ### Temporary workspace override
 
@@ -234,9 +240,9 @@ That override is command-scoped: `WORKSPACE_PATH` in `.env` is unchanged, and
 the agent still uses the same persisted `AGENT_HOME_PATH` for auth/config/state.
 
 Use this intentionally. The short `-v host:container` form is Docker's direct
-bind-mount syntax, so it bypasses the template's `create_host_path: false`
-guard and Docker may create a missing host path for you. Prefer an existing
-absolute path, and do not mount your real home directory, `/`, SSH keys, cloud
+bind-mount syntax, so it bypasses the template's `create_host_path: false` guard
+and Docker may create a missing host path for you. Prefer an existing absolute
+path, and do not mount your real home directory, `/`, SSH keys, cloud
 credentials, or the Docker socket.
 
 For a one-shot run, `-v` is often enough: point `/workspace` and `/home/agent`
@@ -419,8 +425,8 @@ Stop and remove Compose containers/networks/volumes for a template:
 just down codex
 ```
 
-For daemon services, such as Claude Code Remote Control, Hermes gateway,
-Hermes dashboard, or the Remote SSH service:
+For daemon services, such as Claude Code Remote Control, Hermes gateway, Hermes
+dashboard, or the Remote SSH service:
 
 ```bash
 just up claude-code remote-control
@@ -577,8 +583,8 @@ echo "Summarize the temporary workspace." \
     --rm -T agent exec - --ephemeral --yolo
 ```
 
-Docker `-v` can create missing host folders, and `.codex` may contain auth or API
-state. Mount only what you accept exposing to that run.
+Docker `-v` can create missing host folders, and `.codex` may contain auth or
+API state. Mount only what you accept exposing to that run.
 
 Codex from the repo root:
 
@@ -614,11 +620,11 @@ just run opencode run "Summarize the mounted project and list risky files."
 
 OpenCode uses `opencode run [message..]` for non-interactive automation.
 Configure `permission` in `opencode.json` when a run should ask or deny reads,
-edits, shell commands, or external directory access. Real credentialed
-OpenCode runs have not been tested yet; PRs with verified provider-specific
-notes are welcome. For unattended write tasks, local `opencode run --help`
-also exposes `--dangerously-skip-permissions`; keep explicit `deny` rules for
-anything the run must never do.
+edits, shell commands, or external directory access. Real credentialed OpenCode
+runs have not been tested yet; PRs with verified provider-specific notes are
+welcome. For unattended write tasks, local `opencode run --help` also exposes
+`--dangerously-skip-permissions`; keep explicit `deny` rules for anything the
+run must never do.
 
 Pi from the repo root:
 
@@ -707,8 +713,8 @@ echo "Just a test. Create a file called test.txt in the current directory. Add t
     -p -
 ```
 
-That command still uses the persistent agent home from `.env`; only
-`/workspace` is replaced for that run.
+That command still uses the persistent agent home from `.env`; only `/workspace`
+is replaced for that run.
 
 The important detail is `-T` with Docker Compose when piping input. It disables
 TTY allocation for that run, which makes stdin behave like normal automation.
@@ -814,8 +820,8 @@ docker compose run --rm agent
 When you exit the CLI, the container stops and is removed. That is perfect for
 coding sessions.
 
-Some templates also have a real 24/7 mode. Claude Code can run Remote Control
-in the background, Hermes can keep messaging, webhooks, and scheduled jobs alive
+Some templates also have a real 24/7 mode. Claude Code can run Remote Control in
+the background, Hermes can keep messaging, webhooks, and scheduled jobs alive
 through its `gateway` process, Hermes can run its browser dashboard, and
 `remote-dev` can keep an SSH target running. Because those services can receive
 commands while you are away, treat access URLs, SSH keys, messaging allowlists,
@@ -1135,9 +1141,9 @@ just setup claude-code
 just run claude-code
 ```
 
-Claude stores auth and config under the agent home, not your real host home.
-TUI and Remote Control share the same `WORKSPACE_PATH` and `AGENT_HOME_PATH`.
-For one-shot ephemeral runs, copy only `.claude` and `.claude.json` into the
+Claude stores auth and config under the agent home, not your real host home. TUI
+and Remote Control share the same `WORKSPACE_PATH` and `AGENT_HOME_PATH`. For
+one-shot ephemeral runs, copy only `.claude` and `.claude.json` into the
 temporary home when you accept exposing that Claude state.
 
 Remote Control:
@@ -1287,9 +1293,9 @@ under:
 ${AGENT_HOME_PATH}/.pi/agent/
 ```
 
-Pi does not provide a daemon service in this template. For non-interactive
-runs, use `-p` / `--print`; use `--tools read,grep,find,ls` for read-only
-reviews, or `--no-session` when a one-shot run should not write a session file.
+Pi does not provide a daemon service in this template. For non-interactive runs,
+use `-p` / `--print`; use `--tools read,grep,find,ls` for read-only reviews, or
+`--no-session` when a one-shot run should not write a session file.
 
 ### `remote-dev`
 

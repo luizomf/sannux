@@ -8,6 +8,14 @@ Este template é intencionalmente simples: configure um workspace persistente e
 uma agent home persistente, teste a TUI uma vez, e depois escolha se cada run é
 interativa, daemonizada, one-shot persistente ou one-shot efêmera.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## O que este template entrega
 
 - `Dockerfile`: Claude Code mais ferramentas comuns de desenvolvimento Linux.
@@ -83,9 +91,9 @@ O Claude Code guarda estado importante de usuário em `/home/agent/.claude/` e
 de MCP, hooks, cache e outros estados de runtime. Trate os dois caminhos como
 privados.
 
-Remote Control é um fluxo daemon real do Claude Code. Use autenticação
-Anthropic real do Claude Code na home persistente para ele; um `.env` com
-placeholders no estilo Ollama não basta.
+Remote Control é um fluxo daemon real do Claude Code. Use autenticação Anthropic
+real do Claude Code na home persistente para ele; um `.env` com placeholders no
+estilo Ollama não basta.
 
 ### 3. Execução TUI persistente
 
@@ -130,8 +138,8 @@ O daemon executa:
 claude -n main-session --remote-control
 ```
 
-Ele usa o mesmo `WORKSPACE_PATH` e `AGENT_HOME_PATH` persistentes da TUI. Mude
-o workspace alterando `WORKSPACE_PATH` no `.env` antes de iniciar o daemon, ou
+Ele usa o mesmo `WORKSPACE_PATH` e `AGENT_HOME_PATH` persistentes da TUI. Mude o
+workspace alterando `WORKSPACE_PATH` no `.env` antes de iniciar o daemon, ou
 sobrescrevendo essa variável do Compose naquele start. Mantenha a agent home
 igual, a menos que você queira intencionalmente outra identidade do Claude.
 
@@ -148,8 +156,8 @@ printf '%s\n' "Resuma este projeto." | \
     --dangerously-skip-permissions --no-session-persistence -p -
 ```
 
-É simples, mas a execução pode ler e escrever a `AGENT_HOME_PATH` inteira:
-auth, settings, sessões, cache, logs, histórico, plugins, config de MCP, hooks,
+É simples, mas a execução pode ler e escrever a `AGENT_HOME_PATH` inteira: auth,
+settings, sessões, cache, logs, histórico, plugins, config de MCP, hooks,
 projetos confiáveis e estado de runtime. `--no-session-persistence` diz ao
 Claude Code para não salvar aquela conversa.
 
@@ -204,9 +212,9 @@ Copie esses caminhos apenas para runs onde você aceita expor esse estado.
 
 ## Portas de preview
 
-O serviço `agent` comum não publica portas fixas no host por padrão. Se o
-Claude Code subir um app dentro de uma run, publique só a porta necessária
-naquele comando:
+O serviço `agent` comum não publica portas fixas no host por padrão. Se o Claude
+Code subir um app dentro de uma run, publique só a porta necessária naquele
+comando:
 
 ```bash
 docker compose run --rm -p 127.0.0.1:3001:3000 agent
@@ -273,8 +281,8 @@ Ajuste para sua VPS ou alocação do Docker Desktop.
 
 ## Personalizar
 
-Edite `Dockerfile` e `compose.yml` diretamente. Adicione as ferramentas que
-você usa, ative flags de segurança mais restritas (`read_only: true`,
+Edite `Dockerfile` e `compose.yml` diretamente. Adicione as ferramentas que você
+usa, ative flags de segurança mais restritas (`read_only: true`,
 `cap_drop: [ALL]`, `seccomp` customizado) ou troque a imagem base. Depois de
 mudar o `Dockerfile`, rode `just rebuild claude-code` a partir da raiz do
 repositório, ou `docker compose build --no-cache` a partir desta pasta de

@@ -5,6 +5,14 @@ OpenAI Codex CLI rodando em Docker.
 Este template é intencionalmente pequeno: configure uma agent home persistente,
 teste uma vez na TUI, depois mude apenas os argumentos do Codex em cada run.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## O que este template entrega
 
 - `Dockerfile`: Codex CLI mais ferramentas comuns de desenvolvimento Linux.
@@ -164,8 +172,8 @@ printf '%s\n' "Summarize this temporary workspace." | \
     --ephemeral --dangerously-bypass-approvals-and-sandbox -
 ```
 
-Isso ainda usa a agent home persistente do `.env`; só `/workspace` é
-sobrescrito para aquele comando.
+Isso ainda usa a agent home persistente do `.env`; só `/workspace` é sobrescrito
+para aquele comando.
 
 ### 6. Execução one-shot com home efêmera
 
@@ -268,9 +276,9 @@ Ajuste ao tamanho da sua VPS ou da alocação do Docker Desktop.
 
 ## Personalizar
 
-Edite `Dockerfile` e `compose.yml` diretamente. Adicione as ferramentas que
-você usa, ajuste a config do Codex na agent home, ou aperte as opções do Compose
-para seu deploy. Depois de alterar a imagem:
+Edite `Dockerfile` e `compose.yml` diretamente. Adicione as ferramentas que você
+usa, ajuste a config do Codex na agent home, ou aperte as opções do Compose para
+seu deploy. Depois de alterar a imagem:
 
 ```bash
 docker compose build --no-cache

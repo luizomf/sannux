@@ -8,6 +8,14 @@ Este template mantém o Hermes dentro de um contêiner Debian-slim com usuário
 não-root, seu código montado em `/workspace`, e auth/config/estado do Hermes
 persistidos em uma agent home explícita no host.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## O que este template entrega
 
 - `Dockerfile`: Hermes Agent mais ferramentas comuns de desenvolvimento Linux.
@@ -165,10 +173,9 @@ Rode a configuração do gateway apenas depois que o CLI funcionar:
 docker compose run --rm agent gateway setup
 ```
 
-O gateway publica as portas de preview configuradas em `HOST_PORT_*` porque é
-um endpoint remoto persistente. Em uma VPS, configure
-`PORT_BIND_ADDRESS=0.0.0.0` apenas quando você realmente quiser expor essas
-portas.
+O gateway publica as portas de preview configuradas em `HOST_PORT_*` porque é um
+endpoint remoto persistente. Em uma VPS, configure `PORT_BIND_ADDRESS=0.0.0.0`
+apenas quando você realmente quiser expor essas portas.
 
 Use isto quando quiser o dashboard do Hermes no navegador para config, API keys,
 sessões e status:
@@ -239,8 +246,8 @@ docker compose run \
   "Resuma este workspace temporário."
 ```
 
-Isso ainda usa a agent home persistente do `.env`; só `/workspace` é
-sobrescrito para aquele comando.
+Isso ainda usa a agent home persistente do `.env`; só `/workspace` é sobrescrito
+para aquele comando.
 
 ### 6. Execução one-shot com home efêmera
 
@@ -285,9 +292,8 @@ some junto com `tmp_home`.
 
 ## Portas de preview
 
-O serviço `agent` comum não publica portas fixas no host por padrão. Se o
-Hermes subir um app dentro de uma run, publique só a porta necessária naquele
-comando:
+O serviço `agent` comum não publica portas fixas no host por padrão. Se o Hermes
+subir um app dentro de uma run, publique só a porta necessária naquele comando:
 
 ```bash
 docker compose run --rm -p 127.0.0.1:3001:3000 agent
@@ -332,8 +338,8 @@ um problema real de cache locality ou custo para resolver.
 
 Antes de deixar o gateway rodando numa VPS:
 
-- Configure usuários permitidos para cada plataforma de mensageria no arquivo
-  de env do Hermes, em `${AGENT_HOME_PATH}/.hermes/.env`, por exemplo
+- Configure usuários permitidos para cada plataforma de mensageria no arquivo de
+  env do Hermes, em `${AGENT_HOME_PATH}/.hermes/.env`, por exemplo
   `TELEGRAM_ALLOWED_USERS=123456789` ou `GATEWAY_ALLOWED_USERS=123456789`.
 - Mantenha as approvals do Hermes ativas. Use `approvals.mode: manual` ou
   `smart`; não desligue isso para um agente sempre ativo, a menos que seja um
@@ -401,8 +407,8 @@ Hermes é uma codebase Python com superfície ampla, não um simples CLI em npm.
 - Frontend do dashboard compilado em
   `/usr/local/lib/hermes-agent/hermes_cli/web_dist/`, então
   `hermes dashboard --skip-build` funciona no Docker.
-- `ffmpeg`, `build-essential`, `python3-dev`, `libffi-dev` para voz,
-  transcrição e wheels Python nativas.
+- `ffmpeg`, `build-essential`, `python3-dev`, `libffi-dev` para voz, transcrição
+  e wheels Python nativas.
 - Utilitários de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`.
 - Usuário não-root `agent`, com UID/GID espelhados do host via build args.
 
@@ -451,30 +457,30 @@ saída:
 - Não há passthrough de GPU.
 
 O que você ganha: o agente não acessa `~/.ssh/`, `~/.aws/`, `~/.config/gh/`,
-`~/.npmrc` nem qualquer outra coisa fora do workspace montado e da agent home,
-a menos que você monte isso.
+`~/.npmrc` nem qualquer outra coisa fora do workspace montado e da agent home, a
+menos que você monte isso.
 
 ## Personalizar
 
 Edite `Dockerfile` e `compose.yml` diretamente. Adicione as ferramentas que você
-usa, ative flags de segurança mais restritas, passe `--gpus` para servir
-modelos localmente ou troque a imagem base. Depois de mudar o `Dockerfile`,
-rode `just rebuild hermes` a partir da raiz do repositório ou
+usa, ative flags de segurança mais restritas, passe `--gpus` para servir modelos
+localmente ou troque a imagem base. Depois de mudar o `Dockerfile`, rode
+`just rebuild hermes` a partir da raiz do repositório ou
 `docker compose build --no-cache` a partir desta pasta de template.
 
 ### Instalando ferramentas extras
 
 Contêineres são descartáveis. Se você instalar um pacote em um shell interativo,
-essa mudança some quando o contêiner é removido. Para mudanças repetíveis,
-edite o `Dockerfile` e reconstrua a imagem.
+essa mudança some quando o contêiner é removido. Para mudanças repetíveis, edite
+o `Dockerfile` e reconstrua a imagem.
 
 O Hermes consegue delegar trabalho para muitas ferramentas externas quando elas
 existem no contêiner, mas este template intencionalmente não pré-instala toda
 CLI de agente possível. Codex, Claude Code, Gemini, Pi, opencode e harnesses
 parecidos têm seus próprios modelos de instalação, auth, atualização e
-segurança. Adicione no `Dockerfile` só o que você precisa, fixe versões quando
-o instalador permitir e valide cada CLI com `--version` ou um smoke test durante
-o build.
+segurança. Adicione no `Dockerfile` só o que você precisa, fixe versões quando o
+instalador permitir e valide cada CLI com `--version` ou um smoke test durante o
+build.
 
 Por exemplo, mantenha ferramentas opcionais de delegação em um bloco local
 óbvio:
@@ -512,10 +518,10 @@ RUN cd /usr/local/lib/hermes-agent \
 
 Se você precisar de outro extra upstream do Hermes, adicione outro
 `--extra nome` ali e valide com um import ou comando no mesmo bloco `RUN`. Se
-precisar de um pacote Python arbitrário que não está no lockfile do Hermes,
-fixe a versão deliberadamente e entenda que ele fica fora do conjunto de
-dependências hash-locked do Hermes.
+precisar de um pacote Python arbitrário que não está no lockfile do Hermes, fixe
+a versão deliberadamente e entenda que ele fica fora do conjunto de dependências
+hash-locked do Hermes.
 
-Não dependa de `pip install` dentro de `docker compose run --rm --entrypoint
-bash agent`: o venv do Hermes é gerenciado pela imagem e root-owned de
-propósito.
+Não dependa de `pip install` dentro de
+`docker compose run --rm --entrypoint bash agent`: o venv do Hermes é gerenciado
+pela imagem e root-owned de propósito.

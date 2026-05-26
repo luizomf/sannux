@@ -29,6 +29,14 @@ For disposable CLI agents, use a CLI template instead:
 docker compose run --rm agent
 ```
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## What this template gives you
 
 - `Dockerfile`: OpenSSH server, Codex CLI, Node.js, Python, build tools, and
@@ -177,9 +185,9 @@ docker compose run --rm agent
 ```
 
 That one-off `agent` service does not publish preview ports. The long-running
-`ssh` service publishes SSH and the configured preview ports from `.env`
-because Remote SSH apps need a stable endpoint. If you need a port only for a
-temporary `agent` shell, publish it on that command:
+`ssh` service publishes SSH and the configured preview ports from `.env` because
+Remote SSH apps need a stable endpoint. If you need a port only for a temporary
+`agent` shell, publish it on that command:
 
 ```bash
 docker compose run --rm -p 127.0.0.1:3001:3000 agent

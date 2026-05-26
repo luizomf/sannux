@@ -4,16 +4,15 @@ Servidor SSH remoto único para apps locais como Claude Desktop/Claude Code,
 Codex App, Antigravity, VS Code Remote SSH, IDEs parecidas com Cursor e outras
 ferramentas que conseguem se conectar a uma máquina Linux via SSH.
 
-O app continua no seu computador. O servidor remoto dele, os comandos de
-shell, as extensões, os caches e o acesso ao projeto rodam dentro deste
-contêiner.
+O app continua no seu computador. O servidor remoto dele, os comandos de shell,
+as extensões, os caches e o acesso ao projeto rodam dentro deste contêiner.
 
 Use este template quando você quer comodidade e isolamento para apps de
 terceiros que não seguem um fluxo simples de CLI. Ele não é o melhor encaixe
 para vários agentes efêmeros em paralelo. Dá para criar vários ambientes
 `remote-dev`, mas cada um precisa de portas, homes, workspaces e chaves
-separadas; isso consome mais recursos e aumenta a gestão. Para agentes
-efêmeros de CLI, use os templates de CLI com:
+separadas; isso consome mais recursos e aumenta a gestão. Para agentes efêmeros
+de CLI, use os templates de CLI com:
 
 ```bash
 docker compose run --rm agent
@@ -24,6 +23,14 @@ local app -> SSH -> sannux remote-dev contêiner
                     /workspace
                     /home/agent
 ```
+
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
 
 ## O que este template entrega
 
@@ -48,8 +55,8 @@ just setup remote-dev
 O comando de setup:
 
 - cria `templates/remote-dev/.env` quando ele não existir;
-- preenche caminhos locais seguros fora deste repositório quando `WORKSPACE_PATH` e
-  `AGENT_HOME_PATH` estiverem vazios;
+- preenche caminhos locais seguros fora deste repositório quando
+  `WORKSPACE_PATH` e `AGENT_HOME_PATH` estiverem vazios;
 - usa `agent` como usuário SSH e grava isso na configuração SSH gerada;
 - configura o Codex para usar o contêiner como sua fronteira de sandbox;
 - prepara o diretório de runtime do app-server do Codex para o tmpfs dentro do
@@ -147,10 +154,10 @@ estáveis do serviço daemon `ssh`.
 
 ### 6. Execução one-shot com home efêmera
 
-`remote-dev` não fornece um fluxo de agente com home efêmera. Se você precisa
-de muitos agentes descartáveis e não-interativos, use um template de CLI como
-`codex`, `codex-ollama`, `claude-code`, `claude-ollama`, `gemini`, `opencode`
-ou `pi`.
+`remote-dev` não fornece um fluxo de agente com home efêmera. Se você precisa de
+muitos agentes descartáveis e não-interativos, use um template de CLI como
+`codex`, `codex-ollama`, `claude-code`, `claude-ollama`, `gemini`, `opencode` ou
+`pi`.
 
 ## Uso manual
 
@@ -194,22 +201,22 @@ docker compose run --rm -p 127.0.0.1:3001:3000 agent
 - Login de root está desativado.
 - O usuário de login SSH é `agent` por padrão.
 - Usuários avançados podem alterar `REMOTE_USER` antes do setup; o script de
-  setup grava o mesmo usuário em `~/.ssh/config` para que apps de Remote SSH
-  não precisem adivinhar.
+  setup grava o mesmo usuário em `~/.ssh/config` para que apps de Remote SSH não
+  precisem adivinhar.
 - Agent forwarding está desativado.
 - TCP forwarding está ativado porque apps de Remote SSH costumam precisar dele.
 - `~/.codex/app-server-control` é montado como tmpfs dentro do contêiner. O
   Codex App usa um socket Unix ali para sessões remotas via SSH; manter esse
-  socket fora de bind mounts do host evita edge cases de permissão no
-  filesystem do macOS.
+  socket fora de bind mounts do host evita edge cases de permissão no filesystem
+  do macOS.
 - O Codex é configurado com `sandbox_mode = "danger-full-access"` dentro do
-  contêiner. Isso evita um sandbox Linux aninhado frágil. O mount do contêiner
-  é a fronteira, então mantenha `WORKSPACE_PATH` estreito.
+  contêiner. Isso evita um sandbox Linux aninhado frágil. O mount do contêiner é
+  a fronteira, então mantenha `WORKSPACE_PATH` estreito.
 - Não monte sua home real. Monte apenas a pasta do projeto que você quer que o
   app veja.
 
-Em um VPS, prefira manter a porta SSH do contêiner privada e acessá-la por
-meio do serviço SSH do host, de um túnel ou de uma regra de firewall que você
+Em um VPS, prefira manter a porta SSH do contêiner privada e acessá-la por meio
+do serviço SSH do host, de um túnel ou de uma regra de firewall que você
 entenda.
 
 ## O que não montar

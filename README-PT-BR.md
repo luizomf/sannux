@@ -25,6 +25,12 @@ Cada modelo reside em `templates/<template>/` e é autossuficiente. Você pode
 clonar o repositório inteiro e usar o `justfile` na raiz, ou copiar uma pasta de
 modelo para um VPS e usar o Docker Compose convencional.
 
+## Vídeo (PT-BR 🇧🇷)
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## Conceitos centrais
 
 Estas palavras têm significados específicos neste repositório:
@@ -140,16 +146,16 @@ mantenha o estado de cada agente separado e deixe o caminho de risco explícito.
 
 ### Por que não Docker Sandboxes (`sbx`)?
 
-[Docker Sandboxes](https://docs.docker.com/ai/sandboxes/) é uma boa opção
-quando você quer isolamento mais forte para agentes autônomos: ele executa
-sandboxes em microVMs, dá a cada sandbox um Docker daemon próprio e adiciona
-políticas e tratamento de credenciais ao redor do acesso de rede.
+[Docker Sandboxes](https://docs.docker.com/ai/sandboxes/) é uma boa opção quando
+você quer isolamento mais forte para agentes autônomos: ele executa sandboxes em
+microVMs, dá a cada sandbox um Docker daemon próprio e adiciona políticas e
+tratamento de credenciais ao redor do acesso de rede.
 
 O `sannux` não tenta substituir isso. Ele fica de propósito em templates de
 Docker Compose convencional porque o objetivo do projeto é outro:
 
-- os templates são fáceis de inspecionar, copiar para uma VPS e rodar com
-  Docker Compose padrão;
+- os templates são fáceis de inspecionar, copiar para uma VPS e rodar com Docker
+  Compose padrão;
 - o runtime evita o overhead de uma VM por sandbox mais um Docker daemon
   privado;
 - não há login em conta Docker, instalação do `sbx` nem configuração de
@@ -221,11 +227,11 @@ Por que tão rigoroso?
 
 O espaço de trabalho é o que o agente tem permissão para editar. O diretório
 inicial do agente é onde a CLI armazena tokens de login, configurações, sessões,
-logs, memória e histórico local. Sessões TUI e login manual normalmente usam
-uma agent home persistente. Automação com permissões amplas deve preferir uma
-agent home efêmera baseada em uma config de template já testada. Se essas
-pastas estiverem dentro do repositório, torna-se muito fácil acidentalmente
-fazer commit de estado, credenciais, caches ou de um repositório dentro de outro
+logs, memória e histórico local. Sessões TUI e login manual normalmente usam uma
+agent home persistente. Automação com permissões amplas deve preferir uma agent
+home efêmera baseada em uma config de template já testada. Se essas pastas
+estiverem dentro do repositório, torna-se muito fácil acidentalmente fazer
+commit de estado, credenciais, caches ou de um repositório dentro de outro
 repositório.
 
 ### Troca temporária de workspace
@@ -482,9 +488,9 @@ O caminho mais simples:
 just setup remote-dev
 ```
 
-Esse comando cria a chave SSH dedicada, escreve a entrada `sannux-remote-dev`
-no `~/.ssh/config` com o usuário `agent`, prepara o diretório runtime do
-app-server do Codex, monta a imagem e sobe o serviço SSH.
+Esse comando cria a chave SSH dedicada, escreve a entrada `sannux-remote-dev` no
+`~/.ssh/config` com o usuário `agent`, prepara o diretório runtime do app-server
+do Codex, monta a imagem e sobe o serviço SSH.
 
 Depois conecte o app em:
 
@@ -558,11 +564,11 @@ de host (bind mounts).
 ## 7. Comandos de execução única
 
 Interfaces de terminal interativas são boas para humanos. Para automação, o
-stdin geralmente é mais fácil.
-Os exemplos de baixo nível com `just run` e `docker compose run` abaixo usam o
-`AGENT_HOME_PATH` configurado no template. Isso é conveniente, mas em automação
-YOLO sem operador também significa que o comando pode ler e escrever na mesma
-autenticação, sessões, logs, caches e histórico da sua TUI.
+stdin geralmente é mais fácil. Os exemplos de baixo nível com `just run` e
+`docker compose run` abaixo usam o `AGENT_HOME_PATH` configurado no template.
+Isso é conveniente, mas em automação YOLO sem operador também significa que o
+comando pode ler e escrever na mesma autenticação, sessões, logs, caches e
+histórico da sua TUI.
 
 Para `codex-ollama`, use a home persistente quando compartilhar o estado da TUI
 for aceitável:
@@ -628,9 +634,10 @@ O OpenCode usa `opencode run [message..]` para automação não-interativa.
 Configure `permission` em `opencode.json` quando um run deve pedir aprovação ou
 negar leituras, edições, comandos shell ou acesso a diretórios externos. Runs
 reais autenticados com OpenCode ainda não foram testados; PRs com notas
-verificadas por provider são bem-vindos. Para tarefas de escrita sem operador,
-o `opencode run --help` local também expõe `--dangerously-skip-permissions`;
-mantenha regras `deny` explícitas para qualquer coisa que o run nunca deve fazer.
+verificadas por provider são bem-vindos. Para tarefas de escrita sem operador, o
+`opencode run --help` local também expõe `--dangerously-skip-permissions`;
+mantenha regras `deny` explícitas para qualquer coisa que o run nunca deve
+fazer.
 
 Pi a partir da raiz do repositório:
 
@@ -719,14 +726,13 @@ echo "Just a test. Create a file called test.txt in the current directory. Add t
     -p -
 ```
 
-Esse comando ainda usa a agent home persistente do `.env`; apenas `/workspace`
-é substituído naquele run.
+Esse comando ainda usa a agent home persistente do `.env`; apenas `/workspace` é
+substituído naquele run.
 
 O detalhe importante é usar `-T` com o Docker Compose ao encadear (pipe) a
 entrada. Ele desativa a alocação de TTY para aquela execução, fazendo com que o
-stdin se comporte como uma automação normal.
-Depois que o comando imprime a resposta, o contêiner `--rm` encerra e é
-removido.
+stdin se comporte como uma automação normal. Depois que o comando imprime a
+resposta, o contêiner `--rm` encerra e é removido.
 
 ## 8. Modelos locais com Ollama
 
@@ -1152,9 +1158,8 @@ O `slug` deve bater com o nome do modelo usado em `CODEX_MODEL`.
 
 ### `claude-code`
 
-Use quando quiser o Claude Code com autenticação da Anthropic.
-Ele também tem um serviço Remote Control opcional para fluxos persistentes em
-VPS/celular.
+Use quando quiser o Claude Code com autenticação da Anthropic. Ele também tem um
+serviço Remote Control opcional para fluxos persistentes em VPS/celular.
 
 Primeiro setup:
 
@@ -1329,9 +1334,8 @@ Desktop/Claude Code, Codex App, Antigravity, VS Code Remote SSH e ferramentas
 parecidas que precisam instalar um servidor remoto dentro de um Linux isolado.
 
 Ele foi pensado como um ambiente persistente para apps externos, não como um
-template efêmero para vários agentes paralelos. Se a ideia é disparar agentes
-de CLI sob demanda, use os templates de CLI com
-`docker compose run --rm agent`.
+template efêmero para vários agentes paralelos. Se a ideia é disparar agentes de
+CLI sob demanda, use os templates de CLI com `docker compose run --rm agent`.
 
 O serviço `ssh` de longa duração é o modo real do `remote-dev`. O serviço
 `agent` é só um shell não-root e não é um harness one-shot específico de
@@ -1351,8 +1355,8 @@ sannux-remote-dev
 
 O socket SSH do app-server do Codex fica em `~/.codex/app-server-control`; o
 `remote-dev` deixa esse runtime em tmpfs dentro do contêiner e mantém o resto da
-home do agente persistente. O app continua rodando no seu computador; o
-servidor remoto dele roda dentro do contêiner.
+home do agente persistente. O app continua rodando no seu computador; o servidor
+remoto dele roda dentro do contêiner.
 
 ## 14. Resolução de problemas
 
@@ -1360,8 +1364,7 @@ servidor remoto dele roda dentro do contêiner.
 
 O Docker Compose não recebeu um caminho de workspace. Alguns templates, como
 `codex`, `codex-ollama`, `claude-code`, `claude-ollama` e `remote-dev`,
-conseguem preencher um fallback seguro quando você roda o script de setup
-antes.
+conseguem preencher um fallback seguro quando você roda o script de setup antes.
 
 Correção:
 
@@ -1378,9 +1381,9 @@ Os arquivos compose usam intencionalmente:
 create_host_path: false
 ```
 
-Isso impede que o Docker crie silenciosamente a pasta errada para você.
-Em outras palavras: se você errou o caminho, o comando falha cedo em vez de
-criar uma pasta vazia e fazer o agente trabalhar no lugar errado.
+Isso impede que o Docker crie silenciosamente a pasta errada para você. Em
+outras palavras: se você errou o caminho, o comando falha cedo em vez de criar
+uma pasta vazia e fazer o agente trabalhar no lugar errado.
 
 Crie as pastas você mesmo:
 

@@ -10,11 +10,19 @@ cada run será interativo, one-shot persistente ou one-shot efêmero.
 Runs reais autenticados com OpenCode ainda não foram testados; PRs com notas
 verificadas por provider são bem-vindos.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## O que este template entrega
 
 - `Dockerfile`: OpenCode CLI mais ferramentas comuns de desenvolvimento Linux.
-- `compose.yml`: serviço do Docker Compose que monta seu projeto em
-  `/workspace` e a agent home em `/home/agent`.
+- `compose.yml`: serviço do Docker Compose que monta seu projeto em `/workspace`
+  e a agent home em `/home/agent`.
 - `setup-host.sh`: cria as pastas no host, escreve defaults seguros no `.env` e
   prepara os diretórios de config/dados do OpenCode.
 
@@ -97,8 +105,8 @@ ficar em `opencode.json` ou `.opencode/` dentro de `/workspace`.
 
 Trate a agent home inteira como privada. Ela pode conter credenciais de
 provider, config global, cópias de config do projeto, sessões, snapshots,
-histórico, cache, tokens OAuth de MCP, plugins, skills, logs e outros estados
-de runtime.
+histórico, cache, tokens OAuth de MCP, plugins, skills, logs e outros estados de
+runtime.
 
 ### 3. Execução TUI persistente
 
@@ -275,9 +283,9 @@ OpenCode que você aceita expor para aquele run.
 ## Personalização
 
 Edite `Dockerfile` e `compose.yml` diretamente. Adicione ferramentas que você
-usa, ative flags de segurança mais rígidas (`read_only: true`, `cap_drop:
-[ALL]`, `seccomp` customizado) ou troque a imagem base. Depois de mudar a
-imagem:
+usa, ative flags de segurança mais rígidas (`read_only: true`,
+`cap_drop: [ALL]`, `seccomp` customizado) ou troque a imagem base. Depois de
+mudar a imagem:
 
 ```bash
 docker compose build --no-cache

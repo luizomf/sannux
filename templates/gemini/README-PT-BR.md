@@ -7,6 +7,14 @@ Este template é propositalmente simples: configure um workspace persistente e
 uma agent home persistente, autentique o Gemini uma vez, e depois escolha se
 cada run será interativo, one-shot persistente ou one-shot efêmero.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## O que este template entrega
 
 - `Dockerfile`: Gemini CLI mais ferramentas comuns de desenvolvimento Linux.
@@ -78,8 +86,8 @@ Autentique o Gemini com uma destas opções:
 
 - `GEMINI_API_KEY` no `.env`;
 - OAuth do Google na TUI do Gemini;
-- valores de Vertex AI, como `GOOGLE_API_KEY`,
-  `GOOGLE_GENAI_USE_VERTEXAI=true` e `GOOGLE_CLOUD_PROJECT`.
+- valores de Vertex AI, como `GOOGLE_API_KEY`, `GOOGLE_GENAI_USE_VERTEXAI=true`
+  e `GOOGLE_CLOUD_PROJECT`.
 
 O Gemini guarda estado de usuário em `/home/agent/.gemini/`. Isso pode incluir
 credenciais OAuth, settings, trusted folders, registro de projetos, sessões,
@@ -256,9 +264,9 @@ Gemini que você aceita expor para aquele run.
 ## Personalização
 
 Edite `Dockerfile` e `compose.yml` diretamente. Adicione ferramentas que você
-usa, ative flags de segurança mais rígidas (`read_only: true`, `cap_drop:
-[ALL]`, `seccomp` customizado) ou troque a imagem base. Depois de mudar o
-`Dockerfile`, rode:
+usa, ative flags de segurança mais rígidas (`read_only: true`,
+`cap_drop: [ALL]`, `seccomp` customizado) ou troque a imagem base. Depois de
+mudar o `Dockerfile`, rode:
 
 ```bash
 docker compose build --no-cache

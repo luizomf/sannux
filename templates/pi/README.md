@@ -3,18 +3,26 @@
 [Pi Coding Agent](https://pi.dev/docs/latest/quickstart) running in a
 Debian-slim Docker container.
 
-This template is intentionally small: configure one persistent workspace and
-one persistent Pi home, authenticate once, then choose whether each run is
+This template is intentionally small: configure one persistent workspace and one
+persistent Pi home, authenticate once, then choose whether each run is
 interactive, persistent one-shot, or ephemeral one-shot.
 
 Real credentialed Pi runs have not been tested in this pass; the CLI contract
 below is based on Pi's official docs and local `pi --help` behavior.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## What this template gives you
 
 - `Dockerfile`: Pi CLI plus common Linux development tools.
-- `compose.yml`: Docker Compose service that mounts your project at
-  `/workspace` and the agent home at `/home/agent`.
+- `compose.yml`: Docker Compose service that mounts your project at `/workspace`
+  and the agent home at `/home/agent`.
 - `setup-host.sh`: creates host folders, writes safe `.env` defaults, and
   prepares Pi's persisted config directory.
 
@@ -69,8 +77,8 @@ just run pi
 The template is the harness-specific environment: `pi` means Pi Coding Agent
 running with its own workspace and isolated agent home.
 
-Other templates follow the same idea for other harnesses, such as Codex,
-Claude, Gemini, Hermes, or opencode.
+Other templates follow the same idea for other harnesses, such as Codex, Claude,
+Gemini, Hermes, or opencode.
 
 ### 2. Initial persistent config
 
@@ -97,9 +105,8 @@ ${AGENT_HOME_PATH}/.pi/agent/
 ```
 
 Expect this directory to hold private state such as `auth.json`,
-`settings.json`, `models.json`, `sessions/`, `git/`, `npm/`, extensions,
-skills, prompt templates, themes, package installs, logs, and other runtime
-state.
+`settings.json`, `models.json`, `sessions/`, `git/`, `npm/`, extensions, skills,
+prompt templates, themes, package installs, logs, and other runtime state.
 
 ### 3. Persistent TUI run
 
@@ -119,18 +126,18 @@ This run stays active until you quit Pi. It uses the persistent workspace and
 persistent agent home from `.env`.
 
 Pi loads context files at startup from the global Pi dir, parent directories,
-and the current workspace. Project instructions can live in `/workspace/AGENTS.md`
-or `/workspace/CLAUDE.md`; global instructions can live in
-`${AGENT_HOME_PATH}/.pi/agent/AGENTS.md`.
+and the current workspace. Project instructions can live in
+`/workspace/AGENTS.md` or `/workspace/CLAUDE.md`; global instructions can live
+in `${AGENT_HOME_PATH}/.pi/agent/AGENTS.md`.
 
 ### 4. Persistent daemon run
 
 This template does not provide a Pi daemon service.
 
-The official Pi CLI docs list interactive mode, print mode, JSON mode, RPC
-mode, and HTML export. They do not document a long-running daemon with stable
-ports, logs, and shutdown semantics. If a daemon profile is added later,
-document its ports, auth, logs, and shutdown flow here.
+The official Pi CLI docs list interactive mode, print mode, JSON mode, RPC mode,
+and HTML export. They do not document a long-running daemon with stable ports,
+logs, and shutdown semantics. If a daemon profile is added later, document its
+ports, auth, logs, and shutdown flow here.
 
 ### 5. One-shot run with persistent home
 
@@ -333,15 +340,15 @@ Do not mount your real host home, SSH keys, cloud credentials, package manager
 tokens, global git config, browser profiles, or other agent homes into this
 container.
 
-Use a dedicated workspace and a dedicated `AGENT_HOME_PATH` per Pi identity.
-For one-shot ephemeral runs, copy only `.pi/agent` files that the command truly
+Use a dedicated workspace and a dedicated `AGENT_HOME_PATH` per Pi identity. For
+one-shot ephemeral runs, copy only `.pi/agent` files that the command truly
 needs, and remember that copied Pi state may include real auth and session
 history.
 
 ## Security notes
 
-Pi's docs are explicit: no permission popups by default. It expects you to use
-a container, build your own confirmation flow, or add extensions if you need
+Pi's docs are explicit: no permission popups by default. It expects you to use a
+container, build your own confirmation flow, or add extensions if you need
 stricter controls.
 
 This template gives Pi a small house:
@@ -370,7 +377,7 @@ number of processes/threads. Tune the values to your VPS size.
 
 ## Customize
 
-Edit `Dockerfile` and `compose.yml` directly. Add tools you reach for, adjust
-Pi settings, or tighten Compose settings for your deployment. After changing
+Edit `Dockerfile` and `compose.yml` directly. Add tools you reach for, adjust Pi
+settings, or tighten Compose settings for your deployment. After changing
 `Dockerfile`, run `just rebuild pi` from the repo root, or
 `docker compose build --no-cache` from this template folder.

@@ -6,6 +6,14 @@ endpoint `/v1` compatível com OpenAI.
 Este template é propositalmente pequeno: configure uma agent home persistente,
 teste uma vez na TUI e depois mude só os argumentos do Codex em cada execução.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## O que este template entrega
 
 - `Dockerfile`: Codex CLI e ferramentas comuns de desenvolvimento em Linux.
@@ -71,8 +79,8 @@ just run codex-ollama
 
 ### 1. Template
 
-O template é o ambiente específico do harness: `codex-ollama` significa Codex CLI
-configurado para usar um endpoint Ollama.
+O template é o ambiente específico do harness: `codex-ollama` significa Codex
+CLI configurado para usar um endpoint Ollama.
 
 Outros templates seguem a mesma ideia para outros harnesses, como Codex, Claude,
 Gemini, Pi ou opencode.
@@ -173,9 +181,9 @@ somente leitura:
 ${CODEX_MODEL_CATALOG_HOST_PATH:-./model_catalog.json} -> ${CODEX_MODEL_CATALOG_PATH:-/opt/sannux/model_catalog.json}
 ```
 
-Deixe `CODEX_MODEL_CATALOG_HOST_PATH` vazio para usar o
-`./model_catalog.json` versionado. Defina esse valor com um caminho absoluto do
-host quando o catálogo for pessoal ou específico da máquina:
+Deixe `CODEX_MODEL_CATALOG_HOST_PATH` vazio para usar o `./model_catalog.json`
+versionado. Defina esse valor com um caminho absoluto do host quando o catálogo
+for pessoal ou específico da máquina:
 
 ```env
 CODEX_MODEL_CATALOG_HOST_PATH=/srv/example-data/model-catalogs/ollama_models.json

@@ -7,6 +7,14 @@ This template is intentionally simple: configure one persistent workspace and
 one persistent agent home, authenticate Gemini once, then choose whether each
 run is interactive, persistent one-shot, or ephemeral one-shot.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## What this template gives you
 
 - `Dockerfile`: Gemini CLI plus common Linux development tools.

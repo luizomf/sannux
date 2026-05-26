@@ -7,6 +7,14 @@ This template is intentionally simple: configure one persistent workspace and
 one persistent agent home, test the TUI once, then choose whether each run is
 interactive, daemonized, persistent one-shot, or ephemeral one-shot.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## What this template gives you
 
 - `Dockerfile`: Claude Code plus common Linux development tools.
@@ -65,8 +73,8 @@ just run claude-code
 The template is the harness-specific environment: `claude-code` means Claude
 Code configured for real Anthropic/Claude Code usage.
 
-Other templates follow the same idea for other harnesses, such as Codex,
-Claude with Ollama, Gemini, Pi, or opencode.
+Other templates follow the same idea for other harnesses, such as Codex, Claude
+with Ollama, Gemini, Pi, or opencode.
 
 ### 2. Initial persistent config
 
@@ -80,9 +88,9 @@ Claude Code stores important user-level state under `/home/agent/.claude/` and
 `/home/agent/.claude.json`: auth, settings, trusted projects, sessions, MCP
 config, hooks, cache, and other runtime state. Treat both paths as private.
 
-Remote Control is a real Claude Code daemon flow. Use real Claude Code
-Anthropic auth in the persisted home for it; an Ollama-style placeholder `.env`
-is not enough.
+Remote Control is a real Claude Code daemon flow. Use real Claude Code Anthropic
+auth in the persisted home for it; an Ollama-style placeholder `.env` is not
+enough.
 
 ### 3. Persistent TUI run
 
@@ -258,9 +266,9 @@ state you are willing to expose to that run.
 - `${WORKSPACE_PATH}` (host) -> `/workspace` (container): your project.
 - `${AGENT_HOME_PATH}` (host) -> `/home/agent` (container): Claude state.
 
-Both paths should live outside the `sannux` checkout. The Compose bind mounts use
-`create_host_path: false`, so missing directories fail early instead of being
-created in the wrong place.
+Both paths should live outside the `sannux` checkout. The Compose bind mounts
+use `create_host_path: false`, so missing directories fail early instead of
+being created in the wrong place.
 
 ## Resource limits
 
@@ -272,5 +280,5 @@ them to your VPS or Docker Desktop allocation.
 Edit `Dockerfile` and `compose.yml` directly. Add tools you reach for, flip on
 stricter security flags (`read_only: true`, `cap_drop: [ALL]`, custom
 `seccomp`), or swap the base image. After changing `Dockerfile`, run
-`just rebuild claude-code` from the repo root, or `docker compose build
---no-cache` from this template folder.
+`just rebuild claude-code` from the repo root, or
+`docker compose build --no-cache` from this template folder.
