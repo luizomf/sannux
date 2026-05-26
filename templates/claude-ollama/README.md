@@ -6,6 +6,14 @@ Anthropic-compatible endpoint.
 This template is intentionally small: configure one persistent agent home, test
 it once in the TUI, then change only the Claude arguments for each run.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## What this template gives you
 
 - `Dockerfile`: Claude Code plus common Linux development tools.
@@ -116,9 +124,9 @@ printf '%s\n' "Summarize this project." | \
 ```
 
 This is simple, but the run can read and write the full persistent
-`AGENT_HOME_PATH`: settings, sessions, cache, logs, history, plugins, MCP config,
-and runtime state. `--no-session-persistence` tells Claude Code not to save that
-conversation.
+`AGENT_HOME_PATH`: settings, sessions, cache, logs, history, plugins, MCP
+config, and runtime state. `--no-session-persistence` tells Claude Code not to
+save that conversation.
 
 You can also override the workspace for one command:
 
@@ -175,8 +183,8 @@ copying them into an ephemeral run.
 
 ## Preview ports
 
-If the agent starts an app inside the container, publish only the port needed for
-that run:
+If the agent starts an app inside the container, publish only the port needed
+for that run:
 
 ```bash
 docker compose run --rm -p 127.0.0.1:3001:3000 agent
@@ -197,10 +205,10 @@ This flag belongs to the Claude Code harness. Valid values are `low`, `medium`,
 `high`, `xhigh`, and `max`. Values such as `false` are rejected before the
 request reaches Ollama.
 
-With Ollama, whether effort changes anything depends on the
-Anthropic-compatible endpoint and the model. If your model has native thinking
-controls, treat those as an Ollama model/provider detail rather than something
-this Docker template can guarantee.
+With Ollama, whether effort changes anything depends on the Anthropic-compatible
+endpoint and the model. If your model has native thinking controls, treat those
+as an Ollama model/provider detail rather than something this Docker template
+can guarantee.
 
 ## Permission model
 
@@ -224,8 +232,8 @@ Do not casually mount:
 - global Git or GitHub config;
 - the Docker socket.
 
-Mount the project folder the agent should edit, and mount only the agent data you
-are willing to expose to that run.
+Mount the project folder the agent should edit, and mount only the agent data
+you are willing to expose to that run.
 
 ## What's inside
 
@@ -241,9 +249,9 @@ are willing to expose to that run.
 - `${WORKSPACE_PATH}` (host) -> `/workspace` (container): your project.
 - `${AGENT_HOME_PATH}` (host) -> `/home/agent` (container): Claude state.
 
-Both paths should live outside the `sannux` checkout. The Compose bind mounts use
-`create_host_path: false`, so missing directories fail early instead of being
-created in the wrong place.
+Both paths should live outside the `sannux` checkout. The Compose bind mounts
+use `create_host_path: false`, so missing directories fail early instead of
+being created in the wrong place.
 
 ## Resource limits
 

@@ -6,6 +6,14 @@ endpoint compatível com Anthropic.
 Este template é propositalmente pequeno: configure uma agent home persistente,
 teste uma vez na TUI e depois mude só os argumentos do Claude em cada execução.
 
+## Example Vídeo (PT-BR 🇧🇷)
+
+Example using `codex-ollama` (in Brazilian Portuguese).
+
+[![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
+
+- [youtu.be/wqe0VU5L5aU](https://youtu.be/wqe0VU5L5aU)
+
 ## O que este template entrega
 
 - `Dockerfile`: Claude Code e ferramentas comuns de desenvolvimento em Linux.
@@ -101,9 +109,9 @@ Isso compartilha o workspace persistente e a agent home persistente do `.env`.
 
 Este template não fornece serviço daemon do Claude/Ollama.
 
-O Claude Code roda como TUI interativa ou como comando one-shot contra o endpoint
-compatível com Ollama configurado. Se um perfil daemon for adicionado depois,
-documente aqui portas, autenticação, logs e fluxo de parada.
+O Claude Code roda como TUI interativa ou como comando one-shot contra o
+endpoint compatível com Ollama configurado. Se um perfil daemon for adicionado
+depois, documente aqui portas, autenticação, logs e fluxo de parada.
 
 ### 5. Execução one-shot com home persistente
 
@@ -199,10 +207,10 @@ Essa flag pertence ao harness Claude Code. Os valores válidos são `low`,
 `medium`, `high`, `xhigh` e `max`. Valores como `false` são rejeitados antes da
 requisição chegar no Ollama.
 
-Com o Ollama, se o effort muda algo depende do endpoint compatível com
-Anthropic e do modelo. Se o seu modelo tem controles nativos de thinking, trate
-isso como detalhe do modelo/provedor do Ollama, não como algo que este template
-Docker consegue garantir.
+Com o Ollama, se o effort muda algo depende do endpoint compatível com Anthropic
+e do modelo. Se o seu modelo tem controles nativos de thinking, trate isso como
+detalhe do modelo/provedor do Ollama, não como algo que este template Docker
+consegue garantir.
 
 ## Modelo de permissão
 
