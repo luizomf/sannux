@@ -37,15 +37,21 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # with other packages); the symlinks below restore the canonical names.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        ca-certificates curl wget gnupg \
-        git \
+        ca-certificates curl lynx wget gnupg \
+        git git-lfs openssh-client \
         ripgrep fd-find jq fzf bat tree less \
+        build-essential procps \
+        zip unzip xz-utils zstd file \
         python3 python3-pip python3-venv pipx \
-        build-essential \
-        procps \
-        tmux \
+        build-essential pkg-config cmake ninja-build \
+        procps tmux \
+        vim nano \
+        ffmpeg imagemagick pandoc \
+        fontconfig fonts-dejavu-core fonts-noto-color-emoji \
+        chromium bubblewrap \
     && ln -sf "$(which fdfind)" /usr/local/bin/fd \
     && ln -sf "$(which batcat)" /usr/local/bin/bat \
+    && git lfs install --system \
     && rm -rf /var/lib/apt/lists/*
 
 # Node.js 22 LTS via NodeSource. Claude Code requires Node 18+; pinning to

@@ -36,18 +36,18 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # ADDED MORE UTILS BECAUSE CODEX REQUESTED IT.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        ca-certificates curl wget gnupg \
+        ca-certificates curl lynx wget gnupg \
         git git-lfs openssh-client \
         ripgrep fd-find jq fzf bat tree less \
+        build-essential procps \
         zip unzip xz-utils zstd file \
         python3 python3-pip python3-venv pipx \
         build-essential pkg-config cmake ninja-build \
-        procps \
+        procps tmux \
         vim nano \
         ffmpeg imagemagick pandoc \
         fontconfig fonts-dejavu-core fonts-noto-color-emoji \
-        chromium \
-        bubblewrap \
+        chromium bubblewrap \
     && ln -sf "$(which fdfind)" /usr/local/bin/fd \
     && ln -sf "$(which batcat)" /usr/local/bin/bat \
     && git lfs install --system \
