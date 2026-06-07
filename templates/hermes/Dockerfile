@@ -82,8 +82,8 @@ RUN set -eux; \
     rm -rf /tmp/hermes-agent-src; \
     cd /usr/local/lib/hermes-agent; \
     UV_PROJECT_ENVIRONMENT=/usr/local/lib/hermes-agent/venv \
-        /root/.local/bin/uv sync --extra all --extra messaging --locked; \
-    export PATH="/root/.hermes/node/bin:${PATH}"; \
+        /root/.hermes/bin/uv sync --extra all --extra messaging --locked; \
+    export PATH="/root/.hermes/node/bin:/usr/local/share/uv/bin:${PATH}"; \
     cd /usr/local/lib/hermes-agent/web; \
     npm ci --no-audit --no-fund; \
     npm run build; \
