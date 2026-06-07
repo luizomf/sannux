@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+
+set -e
+set -Euo pipefail
+
+trap lf EXIT
+
+tag() {
+  name="${1:?'Tag name required'}"
+  printf "%-7.7s / " "${name}"
+}
+
+_show() {
+  name="${1:-}"
+  msg="${2:-}"
+  code="${3:?'Code required'}"
+
+  if [[ "$DEBUG" -eq 0 && "$code" -eq 0 ]]; then
+    return 0
+  fi
+
+  if [[ ! -z "$name" ]]; then
+    printf '%b%b\n' "$name" "$msg"
+    return "$code"
+  fi
+
+  printf '%b\n' "$msg"
+  return "$code"
+}
+
+lf() {
+  show
+}
+
+show() {
+  _show "" "${1:-}" $?
+}
+
+show_debug() {
+  _show "\e[37;2m$(tag "Debug")\e[0m" "\e[37;2m${1}\e[0m" $?
+}
+
+show_info() {
+  _show "\e[36m$(tag "Info")\e[0m" "${1:-}" $?
+}
+
+show_success() {
+  _show "\e[32m$(tag "Success")\e[0m" "${1:-}" $?
+}
+
+show_warn() {
+  _show "\e[33m$(tag "Warn")\e[0m" "${1:-}" $?
+}
+
+show_error() {
+  _show "\e[31m$(tag "Error")\e[0m" "${1:-}" "${2:-}"
+}
+
+require_cmd() {
+  local cmd="$1"
+  local ret=0
+
+  show_info "Checking required command '$cmd'"
+
+  if ! command -v "$cmd" > /dev/null 2>&1; then
+    ret=$#
+  fi
+
+  # Check your conditions against the captured exit code
+  if [ "$ret" -ne 0 ] && [ "$ret" -ne 14 ]; then
+    show_error "Command $cmd not found" "$ret"
+  fi
+}
+
+rebuild_templates() {
+  show_info "Rebuilding templates"
+
+  for template in $(just templates)
+  do
+    lf
+    show_info "Starting with template: ${template}"
+    lf
+    just rebuild "$template"
+    lf
+    show_info "Template ${template}. We are not checking for errors."
+    lf
+  done
+}
+
+main() {
+  export DEBUG="${DEBUG:-0}"
+
+  lf
+  require_cmd just
+  require_cmd docker
+  rebuild_templates
+}
+
+main "${@:-}"
