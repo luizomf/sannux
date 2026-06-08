@@ -56,12 +56,9 @@ RUN apt-get update \
 
 # Node.js 22 LTS via NodeSource. Claude Code requires Node 18+; pinning to
 # LTS gives ~30 months of support and keeps `npm install -g` predictable.
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
-
-# Claude Code itself. The npm package installs the `claude` binary on PATH.
-RUN npm install -g @anthropic-ai/claude-code
 
 # Non-root user. UID/GID come as build args and default to 1000:1000. Some
 # host GIDs, such as macOS `20`, already exist in Debian, so reuse existing
@@ -80,6 +77,10 @@ RUN set -eux; \
 
 USER agent
 WORKDIR /workspace
+
+# Claude Code
+ENV PATH="/home/agent/.local/bin:$PATH"
+RUN curl -fsSL https://claude.ai/install.sh | bash
 
 # Image entrypoint. With ENTRYPOINT (instead of CMD), any args passed to
 # `docker compose run --rm agent <args>` go straight to `claude`. So:
