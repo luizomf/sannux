@@ -13,4 +13,4 @@ then
   bash -lc "./$(ls -t1 | head -n 1) install"
 fi
 
-claude
+exec claude "$@"
