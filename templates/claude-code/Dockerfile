@@ -54,8 +54,8 @@ RUN apt-get update \
     && git lfs install --system \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js 22 LTS via NodeSource. Claude Code requires Node 18+; pinning to
-# LTS gives ~30 months of support and keeps `npm install -g` predictable.
+# Node.js 24 via NodeSource. Claude Code requires Node 18+; using the current
+# NodeSource line keeps Node available for projects the agent works on.
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*

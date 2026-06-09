@@ -255,7 +255,7 @@ state you are willing to expose to that run.
 ## What's inside
 
 - Debian trixie-slim base pinned by digest.
-- Node.js 22 LTS + Claude Code (`@anthropic-ai/claude-code`).
+- Node.js 24 + Claude Code installed through the official Claude installer.
 - Python 3 + pip + venv.
 - `build-essential` for projects with native deps.
 - CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.

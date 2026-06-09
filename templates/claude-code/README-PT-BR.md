@@ -258,7 +258,7 @@ do Claude que você aceita expor para aquela run.
 ## O que tem dentro
 
 - Base Debian trixie-slim fixada por digest.
-- Node.js 22 LTS + Claude Code (`@anthropic-ai/claude-code`).
+- Node.js 24 + Claude Code instalado pelo instalador oficial do Claude.
 - Python 3 + pip + venv.
 - `build-essential` para projetos com dependências nativas.
 - Utilitários de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`,

@@ -10,7 +10,7 @@ then
   mkdir -p ~/.local/
   mv -n /claude-install/.local/* ~/.local/
   cd "$HOME"/.local/share/claude/versions/ || exit 1
-  bash -lc "./$(ls -t1 | head -n 1) install"
+  bash -c "./$(ls -t1 | head -n 1) install"
 fi
 
 exec claude "$@"
