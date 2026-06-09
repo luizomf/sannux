@@ -75,12 +75,18 @@ RUN set -eux; \
     useradd --uid "${USER_UID}" --gid "${AGENT_GROUP}" \
         --create-home --shell /bin/bash agent
 
+# Claude Code
+RUN curl -fsSL https://claude.ai/install.sh | bash \
+  && mkdir -p /claude-install/.local \
+  && cp -a /root/.local/* /claude-install/.local/ \
+  && chmod -R 755 /claude-install \
+  && chown -R "${USER_UID}":"${USER_GID}" /claude-install \
+  ;
+
+COPY ./entrypoint.sh /entrypoint.sh
+
 USER agent
 WORKDIR /workspace
-
-# Claude Code
-ENV PATH="/home/agent/.local/bin:$PATH"
-RUN curl -fsSL https://claude.ai/install.sh | bash
 
 # Image entrypoint. With ENTRYPOINT (instead of CMD), any args passed to
 # `docker compose run --rm agent <args>` go straight to `claude`. So:
@@ -88,4 +94,4 @@ RUN curl -fsSL https://claude.ai/install.sh | bash
 #   docker compose run --rm agent --version   -> claude --version
 # For an interactive shell, override the entrypoint:
 #   docker compose run --rm --entrypoint bash agent
-ENTRYPOINT ["claude"]
+ENTRYPOINT ["/entrypoint.sh"]
