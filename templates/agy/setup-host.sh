@@ -107,8 +107,8 @@ set_env_value AGENT_HOME_PATH "${agent_home_path}"
 
 install -d -m 0755 "${workspace_path}"
 install -d -m 0700 "${agent_home_path}"
-install -d -m 0700 "${agent_home_path}/.gemini"
+install -d -m 0700 "${agent_home_path}/.gemini/antigravity-cli"
 
 echo "Workspace: ${workspace_path}"
 echo "Agent home: ${agent_home_path}"
-echo "Agy state dir: ${agent_home_path}/.gemini"
+echo "Agy config dir: ${agent_home_path}/.gemini/antigravity-cli"

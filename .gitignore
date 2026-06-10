@@ -1,5 +1,8 @@
 ################################################################################
 
+# Legacy/local Antigravity state. Current CLI settings also live under .gemini.
+.antigravitycli/
+
 ### MISC
 gitbare
 
@@ -26,6 +29,7 @@ templates/*/workspace/
 # Agent-local state, in case a template or manual run creates it outside state/.
 **/.codex/
 **/.claude/
+**/.gemini/
 
 ################################################################################
 
@@ -410,6 +414,3 @@ vite.config.ts.timestamp-*
 .vite/
 
 ################################################################################
-
-
-.antigravitycli/

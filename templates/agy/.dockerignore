@@ -1,4 +1,4 @@
-# Build context kept minimal — the Dockerfile has no COPY/ADD instructions.
+# Build context kept minimal. Only the entrypoint is copied into the image.
 # This also prevents accidental .env, state/, workspace/, caches, or nested
 # repositories from being sent to Docker during builds.
 #

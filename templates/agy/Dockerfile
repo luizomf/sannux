@@ -44,6 +44,8 @@ RUN apt-get update \
     && ln -sf "$(which batcat)" /usr/local/bin/bat \
     && rm -rf /var/lib/apt/lists/*
 
+# Node.js 24 via NodeSource. Antigravity itself is installed by the official
+# binary installer at runtime; Node is included for common project workflows.
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*

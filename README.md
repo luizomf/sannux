@@ -1212,6 +1212,31 @@ For one-shot write tasks, use `--yolo` or `--approval-mode yolo` explicitly.
 Without it, Gemini may try to edit for a long time and then stop because the
 non-interactive run cannot grant approval.
 
+### `agy`
+
+Use when you want Google's Antigravity CLI.
+
+First setup:
+
+```bash
+just setup agy
+just run agy
+```
+
+The image installs `agy` from the official Antigravity installer script on first
+container start. Its persistent settings live under
+`${AGENT_HOME_PATH}/.gemini/antigravity-cli`; treat the whole `.gemini` tree as
+private agent state.
+
+Prompt mode:
+
+```bash
+just run agy -p "summarize the mounted project"
+```
+
+For one-shot write tasks, make the approval mode explicit with
+`--dangerously-skip-permissions`.
+
 ### `hermes`
 
 Use when you want Hermes Agent, especially for messaging/webhooks/scheduled

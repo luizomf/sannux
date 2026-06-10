@@ -1,6 +1,6 @@
 # agy
 
-[Antigravity CLI (agy)] running in a
+[Antigravity CLI (agy)](https://antigravity.google/product/antigravity-cli) running in a
 Debian-slim Docker container.
 
 This template is intentionally simple: configure one persistent workspace and
@@ -21,9 +21,14 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 - `compose.yml`: mounts your project at `/workspace` and the agent home at
   `/home/agent`.
 - `setup-host.sh`: creates the host folders, writes safe `.env` defaults, and
-  prepares `${AGENT_HOME_PATH}/.gemini`.
+  prepares `${AGENT_HOME_PATH}/.gemini/antigravity-cli`.
 
-Antigravity CLI itself is installed from the npm package `the Antigravity binary`.
+Antigravity CLI itself is installed on first container start by the official
+macOS/Linux installer script:
+
+```bash
+curl -fsSL https://antigravity.google/cli/install.sh | bash
+```
 
 ## Setup
 
@@ -72,7 +77,7 @@ just run agy
 ### 1. Template
 
 The template is the harness-specific environment: `agy` means Antigravity CLI
-CLI running with its own workspace and isolated agent home.
+running with its own workspace and isolated agent home.
 
 Other templates follow the same idea for other harnesses, such as Codex, Claude,
 Hermes, Pi, or opencode.
@@ -88,10 +93,12 @@ Authenticate Antigravity with one of these options:
 - Vertex AI values such as `GOOGLE_API_KEY`, `GOOGLE_GENAI_USE_VERTEXAI=true`,
   and `GOOGLE_CLOUD_PROJECT`.
 
-Antigravity stores user-level state under `/home/agent/.gemini/`. That can include
-OAuth credentials, settings, trusted folders, the project registry, sessions,
-history, MCP OAuth tokens, policies, extensions, skills, cache, and other
-runtime state. Treat it as private.
+Antigravity stores CLI settings under
+`/home/agent/.gemini/antigravity-cli/settings.json` and may use other files
+under `/home/agent/.gemini/`. That can include OAuth credentials, settings,
+trusted folders, the project registry, sessions, history, MCP OAuth tokens,
+policies, extensions, skills, cache, and other runtime state. Treat it as
+private.
 
 ### 3. Persistent TUI run
 
@@ -112,7 +119,7 @@ and persistent agent home from `.env`.
 
 ### 4. Persistent daemon run
 
-This template does not provide a Antigravity daemon service.
+This template does not provide an Antigravity daemon service.
 
 Antigravity CLI is run as an interactive TUI or as a one-shot command. If a future
 Antigravity CLI release adds a stable daemon/server mode, add it as an explicit
@@ -132,28 +139,27 @@ From the repo root:
 just run agy -p "summarize the mounted project"
 ```
 
-Antigravity CLI reports `-p` / `--prompt` as non-interactive headless mode.
+Antigravity CLI reports `-p` / `--print` as non-interactive headless mode.
 
 Important: stdin is appended to the `-p` prompt. Use one prompt source for
 normal automation. Combine stdin and `-p` only when you intentionally want both
 pieces of text in the same request.
 
-For example, this read-only prompt uses plan mode:
+For example, this read-only prompt runs without a TTY:
 
 ```bash
 docker compose run --rm -T agent \
-  --approval-mode plan \
   -p "Summarize the mounted project."
 ```
 
 For write tasks, make the approval mode explicit. In non-interactive one-shot
-runs, do not ask Antigravity to edit files without `--yolo` or
-`--approval-mode yolo`; it can spend a long time trying the edit and then report
-that it had no approval to continue.
+runs, do not ask Antigravity to edit files without
+`--dangerously-skip-permissions`; it can spend a long time trying the edit and
+then report that it had no approval to continue.
 
 ```bash
 docker compose run --rm -T agent \
-  --yolo \
+  --dangerously-skip-permissions \
   -p "Create /workspace/iso_date.txt with the current date in ISO 8601 format."
 ```
 
@@ -162,7 +168,7 @@ And this intentionally sends extra context through stdin:
 ```bash
 printf '%s\n' "You are running inside a Docker container." | \
   docker compose run --rm -T agent \
-    --yolo \
+    --dangerously-skip-permissions \
     -p "Report the OS and create /workspace/iso_date.txt with the current date."
 ```
 
@@ -170,15 +176,14 @@ This is simple, but the run can read and write the full persistent
 `AGENT_HOME_PATH`: auth, settings, trusted folders, sessions, cache, logs,
 history, MCP config, policies, extensions, skills, and runtime state.
 
-Use `--approval-mode plan` for read-only one-shot checks:
+Use `-p` / `--print` for read-only one-shot checks:
 
 ```bash
 docker compose run --rm -T agent \
-  --approval-mode plan \
   -p "summarize the mounted project"
 ```
 
-Use `--approval-mode yolo` or `--yolo` only for runs where you accept automatic
+Use `--dangerously-skip-permissions` only for runs where you accept automatic
 edits and shell commands inside the mounted workspace.
 
 ### 6. One-shot run with ephemeral home
@@ -199,7 +204,7 @@ docker compose --project-directory "$template_dir" run \
   -v "$tmp_workspace:/workspace" \
   -v "$tmp_home:/home/agent" \
   --rm -T agent \
-  --yolo \
+  --dangerously-skip-permissions \
   -p "Create /workspace/test.txt with the current date in ISO 8601 format."
 ```
 
@@ -209,7 +214,7 @@ run:
 
 ```bash
 persistent_home=/path/to/agent-homes/agy
-test -d "$persistent_home/.gemini"
+test -d "$persistent_home/.gemini/antigravity-cli"
 cp -R "$persistent_home/.gemini" "$tmp_home/.gemini"
 ```
 
@@ -238,7 +243,8 @@ the app inside the container listen on `0.0.0.0`. On a VPS, expose
 ## What's inside
 
 - Debian trixie-slim base pinned by digest.
-- Node.js 22 LTS + Antigravity CLI (`the Antigravity binary`).
+- Node.js 24 for project workflows.
+- Antigravity CLI installed on first run by the official installer script.
 - Python 3 + pip + venv, so the agent can spin up Python tasks.
 - `build-essential` for projects with native deps.
 - CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`.

@@ -11,6 +11,5 @@ workspace/*
 # Local environment with potentially-sensitive values.
 .env
 
-# Ignore the agy binary that users need to download/copy manually
-bin/*
-!bin/.gitkeep
+# Agent-local state, in case a manual run writes it inside this template.
+.gemini/

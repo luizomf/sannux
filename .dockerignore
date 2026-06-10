@@ -70,3 +70,5 @@ TMP.md
 model_cache
 _data
 .antigravitycli/
+.gemini/
+**/.gemini/

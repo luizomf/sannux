@@ -688,6 +688,122 @@ class ContractCheck:
         if not os.access(script_path, os.X_OK):
             self.fail(relative, "setup script is not executable")
 
+    def check_agy_readmes(self) -> None:
+        checks = [
+            (
+                "templates/agy/README.md",
+                [
+                    "setup",
+                    "scenarios",
+                    "persistent TUI",
+                    "daemon",
+                    "one-shot",
+                    "ephemeral home",
+                    "what not to mount",
+                ],
+            ),
+            (
+                "templates/agy/README-PT-BR.md",
+                [
+                    "setup",
+                    "cenários",
+                    "TUI persistente",
+                    "daemon",
+                    "one-shot",
+                    "home efêmera",
+                    "o que não montar",
+                ],
+            ),
+        ]
+        required_terms = [
+            "Docker Compose",
+            "just",
+            ".gemini/antigravity-cli",
+            "GEMINI_API_KEY",
+            "https://antigravity.google/cli/install.sh",
+            "--print",
+            "--dangerously-skip-permissions",
+        ]
+        for relative, required_headings in checks:
+            text = self.read(relative)
+            if not text:
+                continue
+            self.require_heading_terms(relative, text, required_headings)
+            self.require_terms(relative, text, required_terms)
+
+    def check_agy_compose(self) -> None:
+        relative = "templates/agy/compose.yml"
+        text = self.read(relative)
+        if not text:
+            return
+
+        self.require_regex(
+            relative,
+            text,
+            r"source:\s*\n\s*\$\{WORKSPACE_PATH:[\s\S]*?target:\s*/workspace"
+            r"[\s\S]*?bind:\s*\n\s*create_host_path:\s*false",
+            "WORKSPACE_PATH bind mount guarded by create_host_path: false",
+        )
+        self.require_regex(
+            relative,
+            text,
+            r"source:\s*\n\s*\$\{AGENT_HOME_PATH:[\s\S]*?target:\s*/home/agent"
+            r"[\s\S]*?bind:\s*\n\s*create_host_path:\s*false",
+            "AGENT_HOME_PATH bind mount guarded by create_host_path: false",
+        )
+
+    def check_agy_env_example(self) -> None:
+        relative = "templates/agy/.env.example"
+        text = self.read(relative)
+        if not text:
+            return
+
+        for key in ["WORKSPACE_PATH", "AGENT_HOME_PATH"]:
+            self.require_regex(
+                relative,
+                text,
+                rf"^{key}=$",
+                f"{key} present and intentionally blank",
+            )
+
+    def check_agy_setup_script(self) -> None:
+        relative = "templates/agy/setup-host.sh"
+        script_path = self.path(relative)
+        if not script_path.is_file():
+            self.fail(relative, "file is missing")
+            return
+        if not os.access(script_path, os.X_OK):
+            self.fail(relative, "setup script is not executable")
+        text = self.read(relative)
+        self.require_contains(
+            relative,
+            text,
+            ".gemini/antigravity-cli",
+            "Antigravity CLI config directory",
+        )
+
+    def check_agy_entrypoint(self) -> None:
+        relative = "templates/agy/entrypoint.sh"
+        script_path = self.path(relative)
+        if not script_path.is_file():
+            self.fail(relative, "file is missing")
+            return
+        if not os.access(script_path, os.X_OK):
+            self.fail(relative, "entrypoint script is not executable")
+        text = self.read(relative)
+        self.require_contains(
+            relative,
+            text,
+            "curl -fsSL https://antigravity.google/cli/install.sh | bash >&2",
+            "installer output redirected away from stdout",
+        )
+        self.require_contains(
+            relative,
+            text,
+            'exec agy "$@"',
+            "argument forwarding to agy",
+        )
+
     def check_opencode_readmes(self) -> None:
         checks = [
             (
@@ -1032,6 +1148,11 @@ class ContractCheck:
         self.check_gemini_compose()
         self.check_gemini_env_example()
         self.check_gemini_setup_script()
+        self.check_agy_readmes()
+        self.check_agy_compose()
+        self.check_agy_env_example()
+        self.check_agy_setup_script()
+        self.check_agy_entrypoint()
         self.check_opencode_readmes()
         self.check_opencode_compose()
         self.check_opencode_env_example()

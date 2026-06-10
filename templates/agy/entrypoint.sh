@@ -7,7 +7,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 if ! command -v agy >/dev/null 2>&1
 then
-  curl -fsSL https://antigravity.google/cli/install.sh | bash
+  curl -fsSL https://antigravity.google/cli/install.sh | bash >&2
 fi
 
 exec agy "$@"
