@@ -15,6 +15,7 @@ Current templates:
 | `codex`         | OpenAI Codex CLI              | Codex workflow with OpenAI login/API             |
 | `codex-ollama`  | Codex CLI pointed at Ollama   | Codex harness with a local/open model            |
 | `gemini`        | Gemini CLI                    | Google Gemini workflow                           |
+| `agy`           | Antigravity CLI               | Antigravity CLI workflow                         |
 | `hermes`        | Hermes Agent                  | messaging, webhooks, cron-like automations       |
 | `opencode`      | opencode CLI                  | model-agnostic terminal agent workflow           |
 | `pi`            | Pi Coding Agent               | terminal-first coding agent with local config    |
