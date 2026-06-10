@@ -16,6 +16,7 @@ Modelos atuais:
 | `codex`         | OpenAI Codex CLI                 | Fluxo de trabalho Codex com login/API da OpenAI                 |
 | `codex-ollama`  | Codex CLI apontado para Ollama   | Ambiente Codex com um modelo local/aberto                       |
 | `gemini`        | Gemini CLI                       | Fluxo de trabalho Google Gemini                                 |
+| `agy`           | Antigravity CLI                  | Fluxo de trabalho Antigravity CLI                               |
 | `hermes`        | Hermes Agent                     | mensagens, webhooks, automações estilo cron                     |
 | `opencode`      | opencode CLI                     | Fluxo de trabalho de agente terminal independente de modelo     |
 | `pi`            | Pi Coding Agent                  | Agente de codificação focado em terminal com configuração local |
