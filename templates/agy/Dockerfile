@@ -44,8 +44,7 @@ RUN apt-get update \
     && ln -sf "$(which batcat)" /usr/local/bin/bat \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js 22 LTS via NodeSource.
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 
@@ -62,16 +61,15 @@ RUN set -eux; \
     useradd --uid "${USER_UID}" --gid "${AGENT_GROUP}" \
         --create-home --shell /bin/bash agent
 
-# Antigravity CLI (agy)
-# Assuming the user places the Linux binary at ./bin/agy on the host.
-# If you have an installation script or URL, you can replace this with a curl command.
-COPY ./bin/agy /usr/local/bin/agy
-RUN chmod +x /usr/local/bin/agy
+COPY --chmod=u=rwx,go=rx entrypoint.sh /entrypoint.sh
 
 USER agent
 WORKDIR /workspace
 
-# Image entrypoint.
+# Image entrypoint. With ENTRYPOINT (instead of CMD), any args passed to
+# `docker compose run --rm agent <args>` go straight to `agy`. So:
 #   docker compose run --rm agent             -> agy
 #   docker compose run --rm agent --version   -> agy --version
-ENTRYPOINT ["agy"]
+# For an interactive shell, override the entrypoint:
+#   docker compose run --rm --entrypoint bash agent
+ENTRYPOINT ["/entrypoint.sh"]
