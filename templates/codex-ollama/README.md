@@ -22,6 +22,8 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 - `setup-host.sh`: creates the host folders and writes
   `${AGENT_HOME_PATH}/.codex/config.toml`.
 - `model_catalog.json`: Codex metadata for the local Ollama model.
+- `browser-fetch`: a narrow Chromium-backed fetch CLI for pages that need more
+  than `curl`.
 
 Ollama itself runs outside this container.
 
@@ -193,6 +195,35 @@ Do not put the host path there. Compose uses `create_host_path: false`, so a
 missing custom catalog file fails instead of being created silently.
 
 If you change `CODEX_MODEL`, keep the selected catalog aligned.
+
+## Browser-backed fetch
+
+This image includes `browser-fetch`, a narrow CLI for pages that `curl` cannot
+read well:
+
+```bash
+browser-fetch "https://example.com/article"
+```
+
+It launches headless Chromium inside the container, reads the rendered page, and
+prints structured JSON with `ok`, `url`, `final_url`, `title`, `text`, `links`,
+and `blocked_reason`.
+
+Test it from the template folder with:
+
+```bash
+docker compose run --rm --entrypoint browser-fetch agent \
+  "https://github.com/joske/yserver"
+```
+
+Use it when `curl` fails, returns bot-blocked HTML, returns very little readable
+content, or the page likely needs JavaScript rendering. If `browser-fetch`
+returns `ok: false` or a `blocked_reason`, do not guess; skip the source or mark
+it unverified.
+
+This is only a read-only page fetcher. It does not mount the host browser
+profile, personal cookies, SSH keys, tokens, or the host home. It also is not
+meant to bypass login walls, captchas, or anti-bot protections.
 
 ## Permission model
 

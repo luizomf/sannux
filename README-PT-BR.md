@@ -826,6 +826,20 @@ Se o catálogo disser que o modelo tem uma janela de contexto maior do que o
 Ollama realmente oferece, o Codex planejará em torno de uma janela de contexto
 que não existe de fato. Mantenha o catálogo preciso.
 
+### Fetch com browser para `codex-ollama`
+
+A imagem `codex-ollama` inclui o comando estreito `browser-fetch` para modelos
+locais que só têm acesso ao shell. Ele usa Chromium headless dentro do contêiner
+e retorna JSON com texto renderizado e links:
+
+```bash
+browser-fetch "https://example.com/article"
+```
+
+Use apenas quando o `curl` falhar, retornar HTML bloqueado, retornar pouco texto
+legível ou quando a página provavelmente precisar de JavaScript. Ele não monta o
+perfil do navegador do host, cookies, chaves SSH, tokens nem a home do host.
+
 ## 9. Agentes de execução prolongada e perfis do Compose
 
 A maioria dos modelos é interativa:
