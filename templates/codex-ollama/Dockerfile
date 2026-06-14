@@ -59,6 +59,17 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 
+# Small browser-backed fetcher for local models. It uses the Debian Chromium
+# package already installed above and keeps a fresh browser profile per run.
+RUN mkdir -p /opt/sannux/browser-fetch \
+    && npm install --prefix /opt/sannux/browser-fetch --omit=dev --ignore-scripts playwright-core \
+    && npm cache clean --force
+
+COPY browser-fetch/browser-fetch.mjs /opt/sannux/browser-fetch/browser-fetch.mjs
+
+RUN chmod 0755 /opt/sannux/browser-fetch/browser-fetch.mjs \
+    && ln -sf /opt/sannux/browser-fetch/browser-fetch.mjs /usr/local/bin/browser-fetch
+
 # Codex CLI itself. The npm package installs the `codex` binary on PATH.
 # Under the hood it's a Rust core wrapped by an npm shim. This template uses
 # Codex as the agent harness. setup-host.sh writes the persisted

@@ -1,7 +1,10 @@
-# Build context kept minimal — the Dockerfile has no COPY/ADD instructions.
+# Build context kept minimal; only explicit files copied by the Dockerfile are
+# allowed through.
 # This also prevents accidental .env, state/, workspace/, caches, or nested
 # repositories from being sent to Docker during builds.
 #
 # If you start copying files into the image, add explicit `!path/to/file`
 # entries below instead of removing this blanket ignore.
 *
+!browser-fetch/
+!browser-fetch/browser-fetch.mjs
