@@ -84,9 +84,18 @@ function parseRequestedUrl(rawUrl) {
   return { ok: true, url: parsedUrl.href };
 }
 
-function detectBlockedReason(status, title, text) {
+function detectBlockedReason(status, title, text, finalUrl) {
   if ([401, 403, 429].includes(status)) {
     return "captcha_or_login";
+  }
+
+  try {
+    const parsedFinalUrl = new URL(finalUrl);
+    if (parsedFinalUrl.searchParams.has("js_challenge")) {
+      return "captcha_or_login";
+    }
+  } catch {
+    // Ignore URL parsing here; unsupported input is rejected before navigation.
   }
 
   const sample = `${title}\n${text.slice(0, 6000)}`.toLowerCase();
@@ -104,6 +113,8 @@ function detectBlockedReason(status, title, text) {
     /login required/,
     /you must be logged in/,
     /enable cookies to continue/,
+    /blocked by network security/,
+    /file a ticket below/,
   ];
 
   return blockedPatterns.some((pattern) => pattern.test(sample))
@@ -285,7 +296,7 @@ async function main() {
     const text = capText(extracted.text, maxTextChars);
     const links = normalizeLinks(extracted.links, maxLinks);
     const finalUrl = extracted.final_url || page.url() || parsedUrl.url;
-    const blockedReason = detectBlockedReason(status, title, text);
+    const blockedReason = detectBlockedReason(status, title, text, finalUrl);
 
     if (navigationError && finalUrl.startsWith("chrome-error://")) {
       throw navigationError;
