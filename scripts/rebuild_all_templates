@@ -80,6 +80,7 @@ rebuild_templates() {
     lf
     show_info "Starting with template: ${template}"
     lf
+    just setup "$template"
     just rebuild "$template"
     lf
     show_info "Template ${template}. We are not checking for errors."
