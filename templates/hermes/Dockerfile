@@ -26,36 +26,42 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    UV_PYTHON_INSTALL_DIR=/usr/local/share/uv/python
+    PYTHONUNBUFFERED=1
 
-# Baseline tools the agent reaches for, plus what Hermes' install.sh needs:
-#   - ca-certificates / curl / wget / gnupg: HTTPS, downloads, install.sh.
-#   - git: install.sh clones the Hermes repo; agents read/write code via git.
-#   - passwd: groupadd/useradd for the non-root agent user.
-#   - build-essential + python3-dev + libffi-dev: native deps for the [all]
-#     extras (some wheels compile from source on first install).
-#   - ffmpeg: required by Hermes' voice/transcription extras at runtime.
+# Baseline tools the agent reaches for.
+#   - ca-certificates / curl / wget / gnupg: HTTPS, signing, downloads.
+#   - git: agents read and write code, often through git.
 #   - ripgrep / fd-find / jq / fzf / bat / tree / less: search and inspect.
-#   - python3 + python3-venv: uv (installed by install.sh) re-downloads
-#     Hermes' target Python into /usr/local/share/uv/python, but the system
-#     one is a fallback if uv ever fails.
+#   - python3 + pip + venv + pipx: Python is the second language agents try.
+#   - build-essential: native deps for `npm install` / `pip install`.
 #   - procps: `ps`, useful when agents debug processes.
 #
 # fd-find ships as `fdfind` and bat as `batcat` on Debian (name conflicts
 # with other packages); the symlinks below restore the canonical names.
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates curl wget gnupg \
-        git \
-        passwd \
-        build-essential python3-dev libffi-dev \
-        ffmpeg \
+        git git-lfs openssh-client \
         ripgrep fd-find jq fzf bat tree less \
-        python3 python3-venv \
+        zip unzip xz-utils zstd file \
+        python3 python3-pip python3-venv pipx \
+        build-essential pkg-config cmake ninja-build \
         procps \
+        vim nano \
+        ffmpeg imagemagick pandoc \
+        fontconfig fonts-dejavu-core fonts-noto-color-emoji \
+        chromium \
+        bubblewrap \
     && ln -sf "$(which fdfind)" /usr/local/bin/fd \
     && ln -sf "$(which batcat)" /usr/local/bin/bat \
+    && git lfs install --system \
+    && rm -rf /var/lib/apt/lists/*
+
+# Node.js 24 LTS via NodeSource. Codex CLI ships as an npm package; pinning
+# to LTS gives ~30 months of support and keeps `npm install -g` predictable.
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 # Hermes install. Run as root so the installer auto-detects the FHS layout

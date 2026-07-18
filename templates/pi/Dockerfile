@@ -33,7 +33,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # fd-find ships as `fdfind` and bat as `batcat` on Debian (name conflicts
 # with other packages); the symlinks below restore the canonical names.
 
-# ADDED MORE UTILS BECAUSE CODEX REQUESTED IT.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates curl wget gnupg \
@@ -53,11 +52,17 @@ RUN apt-get update \
     && git lfs install --system \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js 22 LTS via NodeSource. Pi ships as an npm package; pinning to LTS
-# gives ~30 months of support and keeps `npm install -g` predictable.
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+# Node.js 24 LTS via NodeSource. Codex CLI ships as an npm package; pinning
+# to LTS gives ~30 months of support and keeps `npm install -g` predictable.
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
+
+# Small browser-backed fetcher for local models. It uses the Debian Chromium
+# package already installed above and keeps a fresh browser profile per run.
+RUN mkdir -p /opt/sannux/browser-fetch \
+    && npm install --prefix /opt/sannux/browser-fetch --omit=dev --ignore-scripts playwright-core \
+    && npm cache clean --force
 
 # Pi Coding Agent. The npm package installs the `pi` binary on PATH.
 RUN npm install -g @earendil-works/pi-coding-agent

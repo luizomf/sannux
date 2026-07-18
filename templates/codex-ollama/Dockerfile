@@ -33,7 +33,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # fd-find ships as `fdfind` and bat as `batcat` on Debian (name conflicts
 # with other packages); the symlinks below restore the canonical names.
 
-# ADDED MORE UTILS BECAUSE CODEX REQUESTED IT.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates curl wget gnupg \
@@ -53,9 +52,9 @@ RUN apt-get update \
     && git lfs install --system \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js 22 LTS via NodeSource. Codex CLI ships as an npm package; pinning
+# Node.js 24 LTS via NodeSource. Codex CLI ships as an npm package; pinning
 # to LTS gives ~30 months of support and keeps `npm install -g` predictable.
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 

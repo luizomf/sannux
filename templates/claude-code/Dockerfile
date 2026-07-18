@@ -13,7 +13,6 @@
 #   UID. Aligning it to the host user keeps those files editable without
 #   sudo. On macOS this is largely cosmetic (Docker Desktop translates),
 #   on Linux it matters.
-
 FROM debian:trixie-slim@sha256:109e2c65005bf160609e4ba6acf7783752f8502ad218e298253428690b9eaa4b
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -29,33 +28,31 @@ ENV DEBIAN_FRONTEND=noninteractive \
 #   - python3 + pip + venv + pipx: Python is the second language agents try.
 #   - build-essential: native deps for `npm install` / `pip install`.
 #   - procps: `ps`, useful when agents debug processes.
-#   - tmux: session multiplexer; lets a manager Claude spawn parallel
-#     `claude --remote-control` sessions in detached sessions and scrape
-#     the session URL via `tmux capture-pane`.
 #
 # fd-find ships as `fdfind` and bat as `batcat` on Debian (name conflicts
 # with other packages); the symlinks below restore the canonical names.
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        ca-certificates curl lynx wget gnupg \
+        ca-certificates curl wget gnupg \
         git git-lfs openssh-client \
         ripgrep fd-find jq fzf bat tree less \
-        build-essential procps \
         zip unzip xz-utils zstd file \
         python3 python3-pip python3-venv pipx \
         build-essential pkg-config cmake ninja-build \
-        procps tmux \
+        procps \
         vim nano \
         ffmpeg imagemagick pandoc \
         fontconfig fonts-dejavu-core fonts-noto-color-emoji \
-        chromium bubblewrap \
+        chromium \
+        bubblewrap \
     && ln -sf "$(which fdfind)" /usr/local/bin/fd \
     && ln -sf "$(which batcat)" /usr/local/bin/bat \
     && git lfs install --system \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js 24 via NodeSource. Claude Code requires Node 18+; using the current
-# NodeSource line keeps Node available for projects the agent works on.
+# Node.js 24 LTS via NodeSource. Codex CLI ships as an npm package; pinning
+# to LTS gives ~30 months of support and keeps `npm install -g` predictable.
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*

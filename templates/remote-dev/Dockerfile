@@ -19,16 +19,19 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # Remote SSH app servers and coding tasks inside /workspace.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        ca-certificates curl wget gnupg \
         openssh-server \
+        ca-certificates curl wget gnupg \
         git git-lfs openssh-client \
         ripgrep fd-find jq fzf bat tree less \
-        zip unzip xz-utils zstd file tar gzip \
+        zip unzip xz-utils zstd file \
         python3 python3-pip python3-venv pipx \
         build-essential pkg-config cmake ninja-build \
-        bubblewrap \
         procps \
         vim nano \
+        ffmpeg imagemagick pandoc \
+        fontconfig fonts-dejavu-core fonts-noto-color-emoji \
+        chromium \
+        bubblewrap \
     && ln -sf "$(which fdfind)" /usr/local/bin/fd \
     && ln -sf "$(which batcat)" /usr/local/bin/bat \
     && git lfs install --system \

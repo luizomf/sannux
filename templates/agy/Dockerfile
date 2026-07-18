@@ -32,23 +32,37 @@ ENV DEBIAN_FRONTEND=noninteractive \
 #
 # fd-find ships as `fdfind` and bat as `batcat` on Debian (name conflicts
 # with other packages); the symlinks below restore the canonical names.
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates curl wget gnupg \
-        git \
+        git git-lfs openssh-client \
         ripgrep fd-find jq fzf bat tree less \
+        zip unzip xz-utils zstd file \
         python3 python3-pip python3-venv pipx \
-        build-essential \
+        build-essential pkg-config cmake ninja-build \
         procps \
+        vim nano \
+        ffmpeg imagemagick pandoc \
+        fontconfig fonts-dejavu-core fonts-noto-color-emoji \
+        chromium \
+        bubblewrap \
     && ln -sf "$(which fdfind)" /usr/local/bin/fd \
     && ln -sf "$(which batcat)" /usr/local/bin/bat \
+    && git lfs install --system \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js 24 via NodeSource. Antigravity itself is installed by the official
-# binary installer at runtime; Node is included for common project workflows.
+# Node.js 24 LTS via NodeSource. Codex CLI ships as an npm package; pinning
+# to LTS gives ~30 months of support and keeps `npm install -g` predictable.
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
+
+# Small browser-backed fetcher for local models. It uses the Debian Chromium
+# package already installed above and keeps a fresh browser profile per run.
+RUN mkdir -p /opt/sannux/browser-fetch \
+    && npm install --prefix /opt/sannux/browser-fetch --omit=dev --ignore-scripts playwright-core \
+    && npm cache clean --force
 
 # Non-root user. UID/GID come as build args and default to 1000:1000.
 ARG USER_UID=1000

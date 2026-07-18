@@ -32,28 +32,29 @@ ENV DEBIAN_FRONTEND=noninteractive \
 #
 # fd-find ships as `fdfind` and bat as `batcat` on Debian (name conflicts
 # with other packages); the symlinks below restore the canonical names.
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        ca-certificates curl lynx wget gnupg \
+        ca-certificates curl wget gnupg \
         git git-lfs openssh-client \
         ripgrep fd-find jq fzf bat tree less \
-        build-essential procps \
         zip unzip xz-utils zstd file \
         python3 python3-pip python3-venv pipx \
         build-essential pkg-config cmake ninja-build \
-        procps tmux \
+        procps \
         vim nano \
         ffmpeg imagemagick pandoc \
         fontconfig fonts-dejavu-core fonts-noto-color-emoji \
-        chromium bubblewrap \
+        chromium \
+        bubblewrap \
     && ln -sf "$(which fdfind)" /usr/local/bin/fd \
     && ln -sf "$(which batcat)" /usr/local/bin/bat \
     && git lfs install --system \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js 22 LTS via NodeSource. Claude Code requires Node 18+; pinning to
-# LTS gives ~30 months of support and keeps `npm install -g` predictable.
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+# Node.js 24 LTS via NodeSource. Codex CLI ships as an npm package; pinning
+# to LTS gives ~30 months of support and keeps `npm install -g` predictable.
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
 
