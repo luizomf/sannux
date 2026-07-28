@@ -1114,7 +1114,7 @@ class ContractCheck:
             relative,
             text,
             [
-                "require_absolute_path",
+                "resolve_host_path",
                 "reject_unsafe_path",
                 "docker compose build",
                 "docker compose --profile daemon up -d ssh",

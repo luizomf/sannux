@@ -49,13 +49,23 @@ set_env_value() {
   mv "${tmp}" "${env_file}"
 }
 
-require_absolute_path() {
+resolve_host_path() {
   local key="$1"
   local value="$2"
+
+  case "${value}" in
+    \"*\") value="${value:1:${#value}-2}" ;;
+    \'*\') value="${value:1:${#value}-2}" ;;
+  esac
+
   case "${value}" in
     /*) ;;
-    *) fail "${key} must be an absolute host path: ${value}" ;;
+    "~") value="${HOME}" ;;
+    \~/*) value="${HOME}/${value:2}" ;;
+    *) fail "${key} must be an absolute host path or start with ~/: ${value}" ;;
   esac
+
+  printf '%s\n' "${value}"
 }
 
 reject_unsafe_path() {
@@ -97,8 +107,10 @@ workspace_path="${workspace_path:-${default_base}/workspaces/${template_name}}"
 agent_home_path="${agent_home_path:-${default_base}/agent-homes/${template_name}}"
 pi_coding_agent_dir="${pi_coding_agent_dir:-/home/agent/.pi/agent}"
 
-require_absolute_path WORKSPACE_PATH "${workspace_path}"
-require_absolute_path AGENT_HOME_PATH "${agent_home_path}"
+workspace_path_value="${workspace_path}"
+agent_home_path_value="${agent_home_path}"
+workspace_path="$(resolve_host_path WORKSPACE_PATH "${workspace_path_value}")"
+agent_home_path="$(resolve_host_path AGENT_HOME_PATH "${agent_home_path_value}")"
 reject_unsafe_path WORKSPACE_PATH "${workspace_path}"
 reject_unsafe_path AGENT_HOME_PATH "${agent_home_path}"
 
@@ -107,8 +119,8 @@ reject_unsafe_path AGENT_HOME_PATH "${agent_home_path}"
 
 set_env_value USER_UID "${user_uid}"
 set_env_value USER_GID "${user_gid}"
-set_env_value WORKSPACE_PATH "${workspace_path}"
-set_env_value AGENT_HOME_PATH "${agent_home_path}"
+set_env_value WORKSPACE_PATH "${workspace_path_value}"
+set_env_value AGENT_HOME_PATH "${agent_home_path_value}"
 set_env_value PI_CODING_AGENT_DIR "${pi_coding_agent_dir}"
 
 install -d -m 0755 "${workspace_path}"

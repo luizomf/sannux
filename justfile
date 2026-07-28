@@ -41,20 +41,40 @@ _require-host-paths template:
     awk -F= -v key="${key}" '$1 == key {sub(/^[^=]*=/, ""); print; exit}' "${env_file}"
   }
 
+  resolve_host_path() {
+    local key="$1"
+    local value="$2"
+
+    case "${value}" in
+      \"*\") value="${value:1:${#value}-2}" ;;
+      \'*\') value="${value:1:${#value}-2}" ;;
+    esac
+
+    case "${value}" in
+      /*) ;;
+      "~") value="${HOME}" ;;
+      \~/*) value="${HOME}/${value:2}" ;;
+      *)
+        echo "${key} must be an absolute host path or start with ~/ in ${env_file}: ${value}" >&2
+        exit 1
+        ;;
+    esac
+
+    printf '%s\n' "${value}"
+  }
+
   check_host_dir() {
     local key="$1"
     local value="$2"
+    local resolved_path
     if [[ -z "${value}" ]]; then
       echo "${key} is empty in ${env_file}"
       echo "Run: just setup ${template_name}, or edit ${env_file}"
       exit 1
     fi
-    if [[ "${value}" != /* ]]; then
-      echo "${key} must be an absolute host path in ${env_file}: ${value}"
-      exit 1
-    fi
-    if [[ ! -d "${value}" ]]; then
-      echo "${key} does not exist: ${value}"
+    resolved_path="$(resolve_host_path "${key}" "${value}")"
+    if [[ ! -d "${resolved_path}" ]]; then
+      echo "${key} does not exist: ${resolved_path}"
       echo "Run: just setup ${template_name}, or create the directory"
       exit 1
     fi
