@@ -86,13 +86,23 @@ set_toml_top_level_value() {
   mv "${tmp}" "${file}"
 }
 
-require_absolute_path() {
+resolve_host_path() {
   local key="$1"
   local value="$2"
+
+  case "${value}" in
+    \"*\") value="${value:1:${#value}-2}" ;;
+    \'*\') value="${value:1:${#value}-2}" ;;
+  esac
+
   case "${value}" in
     /*) ;;
-    *) fail "${key} must be an absolute host path: ${value}" ;;
+    "~") value="${HOME}" ;;
+    \~/*) value="${HOME}/${value:2}" ;;
+    *) fail "${key} must be an absolute host path or start with ~/: ${value}" ;;
   esac
+
+  printf '%s\n' "${value}"
 }
 
 reject_unsafe_path() {
@@ -171,16 +181,18 @@ case "${remote_user}" in
     ;;
 esac
 
-require_absolute_path WORKSPACE_PATH "${workspace_path}"
-require_absolute_path AGENT_HOME_PATH "${agent_home_path}"
+workspace_path_value="${workspace_path}"
+agent_home_path_value="${agent_home_path}"
+workspace_path="$(resolve_host_path WORKSPACE_PATH "${workspace_path_value}")"
+agent_home_path="$(resolve_host_path AGENT_HOME_PATH "${agent_home_path_value}")"
 reject_unsafe_path WORKSPACE_PATH "${workspace_path}"
 reject_unsafe_path AGENT_HOME_PATH "${agent_home_path}"
 
 set_env_value USER_UID "${user_uid}"
 set_env_value USER_GID "${user_gid}"
 set_env_value REMOTE_USER "${remote_user}"
-set_env_value WORKSPACE_PATH "${workspace_path}"
-set_env_value AGENT_HOME_PATH "${agent_home_path}"
+set_env_value WORKSPACE_PATH "${workspace_path_value}"
+set_env_value AGENT_HOME_PATH "${agent_home_path_value}"
 set_env_value SSH_BIND_ADDRESS "${ssh_bind_address}"
 set_env_value HOST_SSH_PORT "${host_ssh_port}"
 set_env_value SSH_HOST_ALIAS "${ssh_host_alias}"

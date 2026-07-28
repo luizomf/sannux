@@ -49,13 +49,23 @@ set_env_value() {
   mv "${tmp}" "${env_file}"
 }
 
-require_absolute_path() {
+resolve_host_path() {
   local key="$1"
   local value="$2"
+
+  case "${value}" in
+    \"*\") value="${value:1:${#value}-2}" ;;
+    \'*\') value="${value:1:${#value}-2}" ;;
+  esac
+
   case "${value}" in
     /*) ;;
-    *) fail "${key} must be an absolute host path: ${value}" ;;
+    "~") value="${HOME}" ;;
+    \~/*) value="${HOME}/${value:2}" ;;
+    *) fail "${key} must be an absolute host path or start with ~/: ${value}" ;;
   esac
+
+  printf '%s\n' "${value}"
 }
 
 reject_unsafe_path() {
@@ -103,8 +113,10 @@ anthropic_base_url="${anthropic_base_url:-http://host.docker.internal:11434}"
 anthropic_auth_token="${anthropic_auth_token:-ollama}"
 anthropic_model="${anthropic_model:-example-ollama-model}"
 
-require_absolute_path WORKSPACE_PATH "${workspace_path}"
-require_absolute_path AGENT_HOME_PATH "${agent_home_path}"
+workspace_path_value="${workspace_path}"
+agent_home_path_value="${agent_home_path}"
+workspace_path="$(resolve_host_path WORKSPACE_PATH "${workspace_path_value}")"
+agent_home_path="$(resolve_host_path AGENT_HOME_PATH "${agent_home_path_value}")"
 reject_unsafe_path WORKSPACE_PATH "${workspace_path}"
 reject_unsafe_path AGENT_HOME_PATH "${agent_home_path}"
 
@@ -114,8 +126,8 @@ reject_unsafe_path AGENT_HOME_PATH "${agent_home_path}"
 
 set_env_value USER_UID "${user_uid}"
 set_env_value USER_GID "${user_gid}"
-set_env_value WORKSPACE_PATH "${workspace_path}"
-set_env_value AGENT_HOME_PATH "${agent_home_path}"
+set_env_value WORKSPACE_PATH "${workspace_path_value}"
+set_env_value AGENT_HOME_PATH "${agent_home_path_value}"
 set_env_value ANTHROPIC_BASE_URL "${anthropic_base_url}"
 set_env_value ANTHROPIC_AUTH_TOKEN "${anthropic_auth_token}"
 set_env_value ANTHROPIC_API_KEY "${anthropic_api_key}"
