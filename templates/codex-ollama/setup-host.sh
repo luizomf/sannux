@@ -86,11 +86,18 @@ require_existing_host_file_if_set() {
   [[ -z "${value}" ]] && return 0
 
   case "${value}" in
+    \"*\") value="${value:1:${#value}-2}" ;;
+    \'*\') value="${value:1:${#value}-2}" ;;
+  esac
+
+  case "${value}" in
     /*) resolved_path="${value}" ;;
+    "~") resolved_path="${HOME}" ;;
+    \~/*) resolved_path="${HOME}/${value:2}" ;;
     *) resolved_path="${template_dir}/${value}" ;;
   esac
 
-  [[ -f "${resolved_path}" ]] || fail "${key} must point to an existing file. Relative paths are resolved from ${template_dir}: ${value}"
+  [[ -f "${resolved_path}" ]] || fail "${key} must point to an existing file: ${resolved_path}"
 }
 
 reject_unsafe_path() {
