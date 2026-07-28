@@ -35,6 +35,21 @@ _require-host-paths template:
   just _require-env {{template}}
   template_name="{{template}}"
   env_file="templates/${template_name}/.env"
+  docker_endpoint="${DOCKER_HOST:-}"
+
+  if [[ -z "${docker_endpoint}" ]] && command -v docker >/dev/null 2>&1; then
+    docker_context="$(docker context show 2>/dev/null || true)"
+    if [[ -n "${docker_context}" ]]; then
+      context_host_format="$(printf '\173\173.Endpoints.docker.Host\175\175')"
+      docker_endpoint="$(docker context inspect "${docker_context}" --format "${context_host_format}" 2>/dev/null || true)"
+    fi
+  fi
+
+  host_paths_are_local=1
+  case "${docker_endpoint}" in
+    ""|unix://*|npipe://*) ;;
+    *) host_paths_are_local=0 ;;
+  esac
 
   get_env_value() {
     local key="$1"
@@ -73,6 +88,9 @@ _require-host-paths template:
       exit 1
     fi
     resolved_path="$(resolve_host_path "${key}" "${value}")"
+    if [[ "${host_paths_are_local}" -eq 0 ]]; then
+      return 0
+    fi
     if [[ ! -d "${resolved_path}" ]]; then
       echo "${key} does not exist: ${resolved_path}"
       echo "Run: just setup ${template_name}, or create the directory"
