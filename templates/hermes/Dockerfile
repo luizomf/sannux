@@ -58,10 +58,14 @@ RUN apt-get update \
     && git lfs install --system \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js 24 LTS via NodeSource. Codex CLI ships as an npm package; pinning
-# to LTS gives ~30 months of support and keeps `npm install -g` predictable.
+# Node.js 24 LTS via NodeSource. Pin npm separately because NodeSource can
+# change the bundled npm version independently of the selected Node.js major.
+ARG NPM_VERSION=12.0.2
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
+    && npm install --global "npm@${NPM_VERSION}" \
+    && test "$(npm --version)" = "${NPM_VERSION}" \
+    && npm cache clean --force \
     && rm -rf /var/lib/apt/lists/*
 
 # Hermes install. Run as root so the installer auto-detects the FHS layout
