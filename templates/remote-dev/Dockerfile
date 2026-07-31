@@ -27,7 +27,7 @@ RUN apt-get update \
         python3 python3-pip python3-venv pipx \
         build-essential pkg-config cmake ninja-build \
         procps \
-        vim nano \
+        vim nano gh \
         ffmpeg imagemagick pandoc \
         fontconfig fonts-dejavu-core fonts-noto-color-emoji \
         chromium \
@@ -38,10 +38,14 @@ RUN apt-get update \
     && chmod 1777 /tmp \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js 22 LTS is useful for web projects and for remote app servers that
-# expect a modern Node runtime on the SSH target.
+# Node.js 22 LTS is useful for web projects and remote app servers. Pin npm
+# separately because NodeSource can change it independently of the Node major.
+ARG NPM_VERSION=12.0.2
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
+    && npm install --global "npm@${NPM_VERSION}" \
+    && test "$(npm --version)" = "${NPM_VERSION}" \
+    && npm cache clean --force \
     && rm -rf /var/lib/apt/lists/*
 
 # Codex CLI itself. The npm package installs the `codex` binary on PATH.

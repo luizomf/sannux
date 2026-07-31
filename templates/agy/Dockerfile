@@ -42,7 +42,7 @@ RUN apt-get update \
         python3 python3-pip python3-venv pipx \
         build-essential pkg-config cmake ninja-build \
         procps \
-        vim nano \
+        vim nano gh \
         ffmpeg imagemagick pandoc \
         fontconfig fonts-dejavu-core fonts-noto-color-emoji \
         chromium \
@@ -52,10 +52,14 @@ RUN apt-get update \
     && git lfs install --system \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js 24 LTS via NodeSource. Codex CLI ships as an npm package; pinning
-# to LTS gives ~30 months of support and keeps `npm install -g` predictable.
+# Node.js 24 LTS via NodeSource. Pin npm separately because NodeSource can
+# change the bundled npm version independently of the selected Node.js major.
+ARG NPM_VERSION=12.0.2
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
+    && npm install --global "npm@${NPM_VERSION}" \
+    && test "$(npm --version)" = "${NPM_VERSION}" \
+    && npm cache clean --force \
     && rm -rf /var/lib/apt/lists/*
 
 # Small browser-backed fetcher for local models. It uses the Debian Chromium
