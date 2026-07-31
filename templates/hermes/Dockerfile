@@ -48,7 +48,7 @@ RUN apt-get update \
         python3 python3-pip python3-venv pipx \
         build-essential pkg-config cmake ninja-build \
         procps \
-        vim nano \
+        vim nano gh \
         ffmpeg imagemagick pandoc \
         fontconfig fonts-dejavu-core fonts-noto-color-emoji \
         chromium \
