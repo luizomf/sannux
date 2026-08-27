@@ -810,10 +810,10 @@ If the catalog says the model has a larger context than Ollama actually serves,
 Codex will plan around a context window that does not really exist. Keep the
 catalog honest.
 
-### Browser fetch for `codex-ollama`
+### Browser fetch for `codex-ollama` and `pi`
 
-The `codex-ollama` image includes a narrow `browser-fetch` command for local
-models that only have shell access. It uses headless Chromium inside the
+The `codex-ollama` and `pi` images include a narrow `browser-fetch` command for
+local models that only have shell access. It uses headless Chromium inside the
 container and returns JSON with rendered text and links:
 
 ```bash
@@ -821,8 +821,10 @@ browser-fetch "https://example.com/article"
 ```
 
 Use it only when `curl` fails, returns blocked HTML, returns too little readable
-text, or the page likely needs JavaScript. It does not mount the host browser
-profile, cookies, SSH keys, tokens, or the host home.
+text, or the page likely needs JavaScript. If it reports `ok: false` or a
+`blocked_reason`, skip the source or mark it unverified. It does not mount the
+host browser profile, cookies, SSH keys, tokens, or the host home, and it is not
+intended to bypass logins, CAPTCHAs, or anti-bot protections.
 
 ## 9. Long-running agents and Compose profiles
 

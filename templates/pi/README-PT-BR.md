@@ -26,6 +26,8 @@ Example using `codex-ollama` (in Brazilian Portuguese).
   o home do agente em `/home/agent`.
 - `setup-host.sh`: cria as pastas do host, escreve defaults seguros no `.env` e
   prepara o diretório de configuração persistida do Pi.
+- `browser-fetch`: um CLI estreito com Chromium para páginas que precisam de
+  mais do que `curl`.
 
 O Pi é instalado pelo pacote npm `@earendil-works/pi-coding-agent`.
 
@@ -244,6 +246,35 @@ Isso mapeia a porta `3001` do host para a porta `3000` do contêiner naquela
 sessão. Faça o app dentro do contêiner escutar em `0.0.0.0`. Em uma VPS, use
 `0.0.0.0:PORTA_HOST:PORTA_CONTAINER` apenas quando você realmente quiser expor o
 app.
+
+## Fetch com browser
+
+Esta imagem inclui `browser-fetch`, um CLI estreito para páginas que o `curl`
+não consegue ler bem:
+
+```bash
+browser-fetch "https://example.com/article"
+```
+
+Ele abre Chromium headless dentro do contêiner, lê a página renderizada e
+imprime JSON estruturado com `ok`, `url`, `final_url`, `title`, `text`, `links`
+e `blocked_reason`.
+
+Teste a partir da pasta do template com:
+
+```bash
+docker compose run --rm --entrypoint browser-fetch agent \
+  "https://example.com"
+```
+
+Use quando o `curl` falhar, retornar HTML bloqueado por bot, retornar pouco
+conteúdo legível ou quando a página provavelmente precisar de renderização por
+JavaScript. Se o `browser-fetch` retornar `ok: false` ou um `blocked_reason`,
+não chute; pule a fonte ou marque como não verificada.
+
+Isso é apenas um fetcher de página em modo leitura. Ele não monta o perfil do
+navegador do host, cookies pessoais, chaves SSH, tokens nem a home do host. Ele
+não foi feito para contornar login, CAPTCHA ou proteções anti-bot.
 
 ## Ollama / modelos locais
 

@@ -68,6 +68,11 @@ RUN mkdir -p /opt/sannux/browser-fetch \
     && npm install --prefix /opt/sannux/browser-fetch --omit=dev --ignore-scripts playwright-core \
     && npm cache clean --force
 
+COPY browser-fetch/browser-fetch.mjs /opt/sannux/browser-fetch/browser-fetch.mjs
+
+RUN chmod 0755 /opt/sannux/browser-fetch/browser-fetch.mjs \
+    && ln -sf /opt/sannux/browser-fetch/browser-fetch.mjs /usr/local/bin/browser-fetch
+
 # Pi Coding Agent. The npm package installs the `pi` binary on PATH.
 RUN npm install -g @earendil-works/pi-coding-agent
 
