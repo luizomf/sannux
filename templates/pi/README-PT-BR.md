@@ -21,7 +21,8 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 
 ## O que este template entrega
 
-- `Dockerfile`: CLI do Pi mais ferramentas comuns de desenvolvimento em Linux.
+- `Dockerfile`: CLIs do Pi e do Codex, RTK e ferramentas comuns de
+  desenvolvimento em Linux.
 - `compose.yml`: serviço Docker Compose que monta seu projeto em `/workspace` e
   o home do agente em `/home/agent`.
 - `setup-host.sh`: cria as pastas do host, escreve defaults seguros no `.env` e
@@ -348,7 +349,9 @@ echo "Summarize the mounted project." | docker compose run --rm -T agent -p
 ## O que vem dentro
 
 - Base `debian trixie-slim` fixada por digest.
-- Node.js 22 LTS + Pi Coding Agent (`@earendil-works/pi-coding-agent`).
+- Node.js 24 LTS + Pi Coding Agent (`@earendil-works/pi-coding-agent`).
+- Codex CLI (`@openai/codex`) para extensões e agentes aninhados.
+- RTK para saída compacta de comandos de desenvolvimento.
 - Python 3 + pip + venv.
 - `build-essential` para projetos com dependências nativas.
 - Utilitários de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`.

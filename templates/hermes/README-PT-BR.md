@@ -18,7 +18,8 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 
 ## O que este template entrega
 
-- `Dockerfile`: Hermes Agent mais ferramentas comuns de desenvolvimento Linux.
+- `Dockerfile`: Hermes Agent mais ferramentas comuns de desenvolvimento Linux,
+  incluindo RTK.
 - `compose.yml`: um serviço interativo `agent` mais serviços `gateway` e
   `dashboard` no perfil daemon.
 - `setup-host.sh`: cria as pastas no host, escreve defaults seguros no `.env` e

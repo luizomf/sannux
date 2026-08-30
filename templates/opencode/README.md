@@ -19,7 +19,7 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 
 ## What this template gives you
 
-- `Dockerfile`: OpenCode CLI plus common Linux development tools.
+- `Dockerfile`: OpenCode CLI plus common Linux development tools, including RTK.
 - `compose.yml`: Docker Compose service that mounts your project at `/workspace`
   and the agent home at `/home/agent`.
 - `setup-host.sh`: creates the host folders, writes safe `.env` defaults, and
