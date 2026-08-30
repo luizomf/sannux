@@ -405,7 +405,7 @@ Hermes is a Python codebase with a wide surface area, not a single npm CLI.
   `hermes dashboard --skip-build` works in Docker.
 - `ffmpeg`, `build-essential`, `python3-dev`, `libffi-dev` for Hermes voice,
   transcription, and native Python wheels.
-- CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`.
+- CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.
 - Non-root user `agent`, UID/GID matched to your host via build args.
 
 If you do not need the voice/transcription stack, you can edit the Dockerfile to

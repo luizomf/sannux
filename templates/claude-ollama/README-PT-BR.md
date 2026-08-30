@@ -243,7 +243,8 @@ agente que você aceita expor para aquele run.
 - Node.js 22 LTS + Claude Code (`@anthropic-ai/claude-code`).
 - Python 3 + pip + venv.
 - `build-essential` para projetos com dependências nativas.
-- Utilitários de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`.
+- Utilitários de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`,
+  `tmux`.
 - Usuário não-root `agent`, com UID/GID espelhados do host via build args.
 
 ## O que é montado

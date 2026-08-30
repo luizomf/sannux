@@ -264,7 +264,8 @@ público.
 - Node.js 22 LTS + OpenCode CLI (`opencode-ai`).
 - Python 3 + pip + venv, para o agente conseguir abrir tarefas em Python.
 - `build-essential` para projetos com dependências nativas.
-- Utilitários de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`.
+- Utilitários de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`,
+  `tmux`.
 - Usuário não-root `agent`, com UID/GID alinhados ao host via build args.
 
 ## O que não montar
