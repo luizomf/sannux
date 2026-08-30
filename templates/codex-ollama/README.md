@@ -16,7 +16,7 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 
 ## What this template gives you
 
-- `Dockerfile`: Codex CLI plus common Linux development tools.
+- `Dockerfile`: Codex CLI, RTK, and common Linux development tools.
 - `compose.yml`: mounts your project at `/workspace` and the agent home at
   `/home/agent`.
 - `setup-host.sh`: creates the host folders and writes

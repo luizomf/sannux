@@ -18,7 +18,8 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 
 ## O que este template entrega
 
-- `Dockerfile`: Claude Code mais ferramentas comuns de desenvolvimento Linux.
+- `Dockerfile`: Claude Code mais ferramentas comuns de desenvolvimento Linux,
+  incluindo RTK.
 - `compose.yml`: monta seu projeto em `/workspace` e a agent home em
   `/home/agent`.
 - `setup-host.sh`: cria as pastas no host, escreve defaults seguros no `.env` e

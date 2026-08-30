@@ -25,6 +25,9 @@ Each template lives in `templates/<template>/` and is self-contained. You can
 clone the whole repo and use the root `justfile`, or copy one template folder to
 a VPS and use plain Docker Compose.
 
+All images include a pinned, checksum-verified RTK binary. The Pi image also
+bundles a pinned Codex CLI for extensions and nested agent calls.
+
 ## Vídeo (PT-BR 🇧🇷)
 
 [![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)

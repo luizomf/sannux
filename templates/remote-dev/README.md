@@ -39,8 +39,8 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 
 ## What this template gives you
 
-- `Dockerfile`: OpenSSH server, Codex CLI, Node.js, Python, build tools, and
-  common CLI helpers.
+- `Dockerfile`: OpenSSH server, Codex CLI, RTK, Node.js, Python, build tools,
+  and common CLI helpers.
 - `compose.yml`: a long-running `ssh` service under the `daemon` Compose
   profile, plus an auxiliary non-root `agent` shell.
 - `setup-host.sh`: creates safe host folders, writes `.env`, generates a

@@ -17,7 +17,7 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 
 ## What this template gives you
 
-- `Dockerfile`: Antigravity CLI plus common Linux development tools.
+- `Dockerfile`: Antigravity CLI plus common Linux development tools, including RTK.
 - `compose.yml`: mounts your project at `/workspace` and the agent home at
   `/home/agent`.
 - `setup-host.sh`: creates the host folders, writes safe `.env` defaults, and

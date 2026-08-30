@@ -26,6 +26,9 @@ Cada modelo reside em `templates/<template>/` e é autossuficiente. Você pode
 clonar o repositório inteiro e usar o `justfile` na raiz, ou copiar uma pasta de
 modelo para um VPS e usar o Docker Compose convencional.
 
+Todas as imagens incluem um binário RTK fixado e verificado por checksum. A
+imagem do Pi também inclui um Codex CLI fixado para extensões e agentes aninhados.
+
 ## Vídeo (PT-BR 🇧🇷)
 
 [![Agentes de IA Seguros no Docker](https://i3.ytimg.com/vi/wqe0VU5L5aU/maxresdefault.jpg)](https://youtu.be/wqe0VU5L5aU)
