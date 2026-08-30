@@ -93,6 +93,7 @@ If a request conflicts with these rules, stop and explain the tradeoff plainly.
 Treat these as strong preferences, not bureaucracy.
 
 - Prefer boring, explicit, maintainable code.
+- Prefer test-driven development (TDD) whenever practical.
 - Follow the existing conventions of the language, framework, and local files.
 - Prefer editing existing code over creating parallel implementations.
 - Prefer clear domain names over vague names like `data`, `handler`, `manager`,
