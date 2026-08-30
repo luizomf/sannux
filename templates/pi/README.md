@@ -350,7 +350,7 @@ echo "Summarize the mounted project." | docker compose run --rm -T agent -p
 - RTK for compact development-command output.
 - Python 3 + pip + venv.
 - `build-essential` for projects with native deps.
-- CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`.
+- CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.
 - Non-root user `agent`, UID/GID matched to your host via build args.
 
 ## What's mounted

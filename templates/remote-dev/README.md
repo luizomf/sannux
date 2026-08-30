@@ -231,5 +231,5 @@ the project folder the remote app should see, and keep the persistent
 - Node.js 22 LTS.
 - Python 3 + pip + venv.
 - `build-essential` for native deps.
-- CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`.
+- CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.
 - Common archive helpers used by coding agents and remote apps.

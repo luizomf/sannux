@@ -20,7 +20,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         openssh-server \
-        ca-certificates curl wget gnupg \
+        ca-certificates curl wget gnupg tmux \
         git git-lfs openssh-client \
         ripgrep fd-find jq fzf bat tree less \
         zip unzip xz-utils zstd file \

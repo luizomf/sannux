@@ -257,7 +257,7 @@ the app inside the container listen on `0.0.0.0`. On a VPS, expose
 - Node.js 22 LTS + OpenCode CLI (`opencode-ai`).
 - Python 3 + pip + venv, so the agent can spin up Python tasks.
 - `build-essential` for projects with native deps.
-- CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`.
+- CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.
 - Non-root user `agent`, UID/GID matched to your host via build args.
 
 ## What not to mount

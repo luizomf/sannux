@@ -235,6 +235,7 @@ Docker. Monte apenas a pasta de projeto que o app remoto deve ver, e mantenha a
 - Node.js 22 LTS.
 - Python 3 + pip + venv.
 - `build-essential` para dependências nativas.
-- Ferramentas de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`.
+- Ferramentas de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`,
+  `tmux`.
 - Utilitários comuns de arquivo compactado usados por agentes de código e apps
   remotos.
