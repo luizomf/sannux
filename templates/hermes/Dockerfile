@@ -20,7 +20,7 @@
 #   messaging gateways). Expect a multi-gigabyte image. If you need a leaner
 #   build, edit the install command below to skip extras you don't use.
 
-FROM debian:trixie-slim@sha256:109e2c65005bf160609e4ba6acf7783752f8502ad218e298253428690b9eaa4b
+FROM debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132
 
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
@@ -28,31 +28,18 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# Baseline tools the agent reaches for.
-#   - ca-certificates / curl / wget / gnupg: HTTPS, signing, downloads.
-#   - git: agents read and write code, often through git.
-#   - ripgrep / fd-find / jq / fzf / bat / tree / less: search and inspect.
-#   - python3 + pip + venv + pipx: Python is the second language agents try.
-#   - build-essential: native deps for `npm install` / `pip install`.
-#   - procps: `ps`, useful when agents debug processes.
-#
-# fd-find ships as `fdfind` and bat as `batcat` on Debian (name conflicts
-# with other packages); the symlinks below restore the canonical names.
-
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        ca-certificates curl wget gnupg tmux \
-        git git-lfs openssh-client \
-        ripgrep fd-find jq fzf bat tree less \
-        zip unzip xz-utils zstd file \
-        python3 python3-pip python3-venv pipx \
+        ca-certificates curl wget gnupg tmux gnupg \
+        build-essential git git-lfs openssh-client \
+        ripgrep fd-find jq fzf bat tree less tar gzip \
+        inetutils-traceroute inetutils-ping iproute2 \
+        zip unzip xz-utils zstd file lsof make psmisc \
+        python3 python3-pip python3-dev python3-venv pipx \
         build-essential pkg-config cmake ninja-build \
-        procps \
-        vim nano gh \
-        ffmpeg imagemagick pandoc \
+        procps vim nano gh ffmpeg imagemagick pandoc \
         fontconfig fonts-dejavu-core fonts-noto-color-emoji \
-        chromium \
-        bubblewrap \
+        chromium bubblewrap rsync socat bc \
     && ln -sf "$(which fdfind)" /usr/local/bin/fd \
     && ln -sf "$(which batcat)" /usr/local/bin/bat \
     && git lfs install --system \

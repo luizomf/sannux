@@ -6,7 +6,7 @@
 # etc.) but its commands and remote server should run inside a constrained
 # Linux container.
 
-FROM debian:trixie-slim@sha256:109e2c65005bf160609e4ba6acf7783752f8502ad218e298253428690b9eaa4b
+FROM debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132
 
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
@@ -14,28 +14,21 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# Baseline remote-development tools.
-# openssh-server is the only service; the rest are common dependencies for
-# Remote SSH app servers and coding tasks inside /workspace.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        openssh-server \
-        ca-certificates curl wget gnupg tmux \
-        git git-lfs openssh-client \
-        ripgrep fd-find jq fzf bat tree less \
-        zip unzip xz-utils zstd file \
-        python3 python3-pip python3-venv pipx \
+    && apt-get install -y --no-install-recommends openssh-server \
+        ca-certificates curl wget gnupg tmux gnupg \
+        build-essential git git-lfs openssh-client \
+        ripgrep fd-find jq fzf bat tree less tar gzip \
+        inetutils-traceroute inetutils-ping iproute2 \
+        zip unzip xz-utils zstd file lsof make psmisc \
+        python3 python3-pip python3-dev python3-venv pipx \
         build-essential pkg-config cmake ninja-build \
-        procps \
-        vim nano gh \
-        ffmpeg imagemagick pandoc \
+        procps vim nano gh ffmpeg imagemagick pandoc \
         fontconfig fonts-dejavu-core fonts-noto-color-emoji \
-        chromium \
-        bubblewrap \
+        chromium bubblewrap rsync socat bc \
     && ln -sf "$(which fdfind)" /usr/local/bin/fd \
     && ln -sf "$(which batcat)" /usr/local/bin/bat \
     && git lfs install --system \
-    && chmod 1777 /tmp \
     && rm -rf /var/lib/apt/lists/*
 
 # RTK compresses verbose development-command output before it reaches an agent.
