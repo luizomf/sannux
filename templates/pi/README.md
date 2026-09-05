@@ -346,12 +346,34 @@ echo "Summarize the mounted project." | docker compose run --rm -T agent -p
 
 - Debian trixie-slim base pinned by digest.
 - Node.js 24 LTS + Pi Coding Agent (`@earendil-works/pi-coding-agent`).
-- Codex CLI (`@openai/codex`) for extensions and nested agent calls.
+- Codex CLI 0.153.3 (`@openai/codex`) for extensions and nested agent calls.
 - RTK for compact development-command output.
 - Python 3 + pip + venv.
 - `build-essential` for projects with native deps.
 - CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.
 - Non-root user `agent`, UID/GID matched to your host via build args.
+
+### Nested Codex catalog compatibility
+
+Codex is pinned to `0.153.3`: with the same dedicated Sannux authentication and
+fresh homes, `0.151.0` omitted `gpt-6-astra` from `codex debug models`, while
+`0.153.3` included it. This changes the CLI dependency, not your selected model
+or reasoning effort. Model access still depends on your provider/account.
+
+After pulling this change, run `just build pi` from the repo root (normal
+Compose build with cache). In the intended run environment, check:
+
+```bash
+codex --version
+codex debug models | python3 -c 'import json, sys; assert any(m["slug"] == "gpt-6-astra" for m in json.load(sys.stdin)["models"]), "gpt-6-astra missing from catalog"'
+```
+
+This is an opt-in network/auth integration check, not agent generation. Use a
+dedicated Sannux credential in a temporary home, never host Codex auth. A
+`--bundled` or offline catalog does not establish account-specific availability.
+Check the resolved `codex` on PATH too: a home-installed binary can shadow the
+image-managed one. Rebuilding does not update mounted extension/helper snapshots.
+The offline `just check` guard verifies the dependency pin, not live model access.
 
 ## What's mounted
 

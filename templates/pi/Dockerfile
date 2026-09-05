@@ -107,7 +107,8 @@ RUN npm install -g @earendil-works/pi-coding-agent
 
 # Codex is available for Pi extensions and nested agent calls. Keep it pinned so
 # rebuilding the image does not silently change those workflows.
-ARG CODEX_VERSION=0.151.0
+# 0.153.3 exposes the Astra catalog entry that 0.151.0 omitted with the same auth.
+ARG CODEX_VERSION=0.153.3
 RUN npm install -g "@openai/codex@${CODEX_VERSION}" \
     && test "$(codex --version)" = "codex-cli ${CODEX_VERSION}"
 

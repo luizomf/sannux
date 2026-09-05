@@ -350,13 +350,36 @@ echo "Summarize the mounted project." | docker compose run --rm -T agent -p
 
 - Base `debian trixie-slim` fixada por digest.
 - Node.js 24 LTS + Pi Coding Agent (`@earendil-works/pi-coding-agent`).
-- Codex CLI (`@openai/codex`) para extensões e agentes aninhados.
+- Codex CLI 0.153.3 (`@openai/codex`) para extensões e agentes aninhados.
 - RTK para saída compacta de comandos de desenvolvimento.
 - Python 3 + pip + venv.
 - `build-essential` para projetos com dependências nativas.
 - Utilitários de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`,
   `tmux`.
 - Usuário não-root `agent`, com UID/GID alinhados ao host via build args.
+
+### Compatibilidade do catálogo do Codex aninhado
+
+O Codex está fixado em `0.153.3`: com a mesma autenticação dedicada do Sannux e
+homes novas, `0.151.0` omitiu `gpt-6-astra` de `codex debug models`, enquanto
+`0.153.3` incluiu o modelo. Isso muda a dependência do CLI, não seu modelo
+selecionado nem o esforço de raciocínio. O acesso ainda depende do provedor/conta.
+
+Depois de atualizar o checkout, rode `just build pi` na raiz (build normal do
+Compose com cache). No ambiente destinado ao run, confira:
+
+```bash
+codex --version
+codex debug models | python3 -c 'import json, sys; assert any(m["slug"] == "gpt-6-astra" for m in json.load(sys.stdin)["models"]), "gpt-6-astra missing from catalog"'
+```
+
+Essa é uma verificação de integração opcional com rede/auth, sem geração pelo
+agente. Use uma credencial dedicada do Sannux em uma home temporária, nunca a
+auth do Codex do host. Catálogo `--bundled` ou offline não comprova disponibilidade
+para a conta. Confira também o `codex` resolvido no PATH: um binário instalado na
+home pode ter precedência sobre o da imagem. O rebuild não atualiza snapshots de
+extensões/helpers montados. O `just check` offline verifica a versão fixada,
+não o acesso real ao modelo.
 
 ## O que é montado
 

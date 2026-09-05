@@ -938,6 +938,30 @@ class ContractCheck:
             self.require_heading_terms(relative, text, required_headings)
             self.require_terms(relative, text, required_terms)
 
+    def check_pi_dockerfile(self) -> None:
+        relative = "templates/pi/Dockerfile"
+        text = self.read(relative)
+        # Dependency regression guard, not a user-selected model constraint.
+        # 0.151.0 omitted a model exposed by 0.153.3 with identical auth.
+        self.require_regex(
+            relative,
+            text,
+            r"^ARG CODEX_VERSION=0\.153\.3$",
+            "Codex CLI 0.153.3 catalog-compatible pin",
+        )
+        self.require_contains(
+            relative,
+            text,
+            'npm install -g "@openai/codex@${CODEX_VERSION}"',
+            "installation of the pinned Codex package",
+        )
+        self.require_contains(
+            relative,
+            text,
+            'test "$(codex --version)" = "codex-cli ${CODEX_VERSION}"',
+            "build-time Codex version verification",
+        )
+
     def check_pi_compose(self) -> None:
         relative = "templates/pi/compose.yml"
         text = self.read(relative)
@@ -1158,6 +1182,7 @@ class ContractCheck:
         self.check_opencode_env_example()
         self.check_opencode_setup_script()
         self.check_pi_readmes()
+        self.check_pi_dockerfile()
         self.check_pi_compose()
         self.check_pi_env_example()
         self.check_pi_setup_script()
