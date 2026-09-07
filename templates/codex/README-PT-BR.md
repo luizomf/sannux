@@ -254,7 +254,7 @@ agente que você aceita expor para aquele run.
 ## O que tem dentro
 
 - Base Debian trixie-slim fixada por digest.
-- Node.js 22 LTS + Codex CLI (`@openai/codex`).
+- Node.js LTS atual + Codex CLI (`@openai/codex`).
 - Python 3 + pip + venv.
 - `build-essential` para projetos com dependências nativas.
 - Ferramentas de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`,
@@ -282,5 +282,17 @@ usa, ajuste a config do Codex na agent home, ou aperte as opções do Compose pa
 seu deploy. Depois de alterar a imagem:
 
 ```bash
-docker compose build --no-cache
+docker compose build --no-cache --pull
 ```
+
+## Atualização das ferramentas
+
+Somente a base Debian fica fixada. Ferramentas seguem stable/latest do upstream;
+Node.js segue o LTS atual, npm segue latest e RTK usa o checksum da mesma release.
+Use `just rebuild codex` na raiz ou `docker compose build --no-cache --pull`
+nesta pasta. Builds comuns com cache podem reutilizar ferramentas antigas.
+Locks e limites de compatibilidade mantidos pelo upstream são preservados.
+Versões flutuantes favorecem atualização, não reprodutibilidade: mudanças ou
+falhas do upstream podem quebrar builds ou compatibilidade. Não reintroduza pins
+sem aprovação explícita do dono. Rebuilds não reiniciam contêineres nem atualizam
+extensões montadas ou binários da home que tenham precedência no PATH.

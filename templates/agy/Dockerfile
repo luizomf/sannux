@@ -40,41 +40,42 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # RTK compresses verbose development-command output before it reaches an agent.
-# Pin both architecture-specific release artifacts and verify them before install.
-ARG RTK_VERSION=0.46.0
-ARG RTK_AMD64_SHA256=79aa5b89c69566bbfeceb66c8a27cfbe52237fc7ee3e683115f43745a3262d21
-ARG RTK_ARM64_SHA256=e8c2e1787f46017ea7c5a711b2bc6a7f7cf61c7ad69385b4c1e4daff1135dcd1
+# Resolve latest once, then verify the matching upstream release checksum.
 RUN set -eux; \
     case "$(dpkg --print-architecture)" in \
         amd64) \
             RTK_TARGET="x86_64-unknown-linux-musl"; \
-            RTK_SHA256="${RTK_AMD64_SHA256}"; \
             ;; \
         arm64) \
             RTK_TARGET="aarch64-unknown-linux-gnu"; \
-            RTK_SHA256="${RTK_ARM64_SHA256}"; \
             ;; \
         *) \
             echo "Unsupported RTK architecture: $(dpkg --print-architecture)" >&2; \
             exit 1; \
             ;; \
     esac; \
-    RTK_ARCHIVE="/tmp/rtk.tar.gz"; \
-    curl -fsSL \
-        "https://github.com/rtk-ai/rtk/releases/download/v${RTK_VERSION}/rtk-${RTK_TARGET}.tar.gz" \
-        -o "${RTK_ARCHIVE}"; \
-    printf '%s  %s\n' "${RTK_SHA256}" "${RTK_ARCHIVE}" | sha256sum -c -; \
+    curl -fsSL https://api.github.com/repos/rtk-ai/rtk/releases/latest -o /tmp/rtk-release.json; \
+    RTK_TAG="$(jq -er '.tag_name | select(test("^v[0-9]+[.][0-9]+[.][0-9]+$"))' /tmp/rtk-release.json)"; \
+    RTK_ARCHIVE="rtk-${RTK_TARGET}.tar.gz"; \
+    RTK_URL="https://github.com/rtk-ai/rtk/releases/download/${RTK_TAG}"; \
+    cd /tmp; \
+    curl -fsSL "${RTK_URL}/${RTK_ARCHIVE}" -o "${RTK_ARCHIVE}"; \
+    curl -fsSL "${RTK_URL}/checksums.txt" -o rtk-checksums.txt; \
+    awk -v archive="${RTK_ARCHIVE}" '$2 == archive {print; found++} END {if (found != 1) exit 1}' \
+        rtk-checksums.txt > rtk-checksum.txt; \
+    sha256sum -c - < rtk-checksum.txt; \
     tar -xzf "${RTK_ARCHIVE}" -C /usr/local/bin rtk; \
-    rm -f "${RTK_ARCHIVE}"; \
-    test "$(rtk --version)" = "rtk ${RTK_VERSION}"
+    rm -f "${RTK_ARCHIVE}" rtk-release.json rtk-checksums.txt rtk-checksum.txt; \
+    test "$(rtk --version)" = "rtk ${RTK_TAG#v}"
 
-# Node.js 24 LTS via NodeSource. Pin npm separately because NodeSource can
-# change the bundled npm version independently of the selected Node.js major.
-ARG NPM_VERSION=12.0.2
-RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+# Follow NodeSource's current LTS channel and npm's latest release.
+# Fail rather than silently install npm on an unsupported Node engine.
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x -o /tmp/nodesource.sh \
+    && bash /tmp/nodesource.sh \
+    && rm /tmp/nodesource.sh \
     && apt-get install -y --no-install-recommends nodejs \
-    && npm install --global "npm@${NPM_VERSION}" \
-    && test "$(npm --version)" = "${NPM_VERSION}" \
+    && npm install --global --engine-strict npm@latest \
+    && node --version && npm --version \
     && npm cache clean --force \
     && rm -rf /var/lib/apt/lists/*
 
@@ -83,6 +84,13 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
 RUN mkdir -p /opt/sannux/browser-fetch \
     && npm install --prefix /opt/sannux/browser-fetch --omit=dev --ignore-scripts playwright-core \
     && npm cache clean --force
+
+# Resolve the official current release during rebuild, outside the agent home.
+# The official installer verifies the release manifest's SHA512 checksum.
+RUN curl -fsSL https://antigravity.google/cli/install.sh -o /tmp/agy-install.sh \
+    && bash /tmp/agy-install.sh --dir /usr/local/bin \
+    && rm /tmp/agy-install.sh \
+    && agy --version
 
 # Non-root user. UID/GID come as build args and default to 1000:1000.
 ARG USER_UID=1000

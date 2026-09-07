@@ -23,12 +23,11 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 - `setup-host.sh`: creates the host folders, writes safe `.env` defaults, and
   prepares `${AGENT_HOME_PATH}/.gemini/antigravity-cli`.
 
-Antigravity CLI itself is installed on first container start by the official
-macOS/Linux installer script:
-
-```bash
-curl -fsSL https://antigravity.google/cli/install.sh | bash
-```
+The image installs Antigravity CLI into `/usr/local/bin` during the build using
+the official https://antigravity.google/cli/install.sh installer with
+`--dir /usr/local/bin`. The installer verifies the current release's SHA512
+checksum. Fresh homes need no runtime download; a deliberate `~/.local/bin/agy`
+installation can still override the image binary.
 
 ## Setup
 
@@ -243,8 +242,8 @@ the app inside the container listen on `0.0.0.0`. On a VPS, expose
 ## What's inside
 
 - Debian trixie-slim base pinned by digest.
-- Node.js 24 for project workflows.
-- Antigravity CLI installed on first run by the official installer script.
+- Current Node.js LTS for project workflows.
+- Current Antigravity CLI installed at image build by the official installer.
 - Python 3 + pip + venv, so the agent can spin up Python tasks.
 - `build-essential` for projects with native deps.
 - CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.
@@ -271,5 +270,17 @@ stricter security flags (`read_only: true`, `cap_drop: [ALL]`, custom
 `seccomp`), or swap the base image. After changing `Dockerfile`, run:
 
 ```bash
-docker compose build --no-cache
+docker compose build --no-cache --pull
 ```
+
+## Tool updates
+
+Only the Debian base is pinned. Tools follow upstream stable/latest channels;
+Node.js follows current LTS, npm follows latest and RTK uses the matching release
+checksum. Use `just rebuild agy` at the repo root or
+`docker compose build --no-cache --pull` in this folder. Ordinary cached builds
+may reuse older tools. Upstream-owned locks and compatibility bounds stay intact.
+Floating tools favor freshness, not reproducibility: upstream changes or outages
+can break builds or compatibility. Do not restore pins without explicit owner
+approval. Rebuilds do not restart containers or refresh mounted extensions or
+home-installed binaries that shadow the image's PATH.

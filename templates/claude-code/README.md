@@ -255,7 +255,10 @@ state you are willing to expose to that run.
 ## What's inside
 
 - Debian trixie-slim base pinned by digest.
-- Node.js 24 + Claude Code installed through the official Claude installer.
+- Current Node.js LTS + Claude Code from the official installer's stable channel.
+  The native binary is copied to `/usr/local/bin/claude`, usable with a fresh home
+  without runtime installation. Deliberate `~/.local/bin/claude` overrides still
+  take precedence.
 - Python 3 + pip + venv.
 - `build-essential` for projects with native deps.
 - CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.
@@ -281,4 +284,16 @@ Edit `Dockerfile` and `compose.yml` directly. Add tools you reach for, flip on
 stricter security flags (`read_only: true`, `cap_drop: [ALL]`, custom
 `seccomp`), or swap the base image. After changing `Dockerfile`, run
 `just rebuild claude-code` from the repo root, or
-`docker compose build --no-cache` from this template folder.
+`docker compose build --no-cache --pull` from this template folder.
+
+## Tool updates
+
+Only the Debian base is pinned. Tools follow upstream stable/latest channels;
+Node.js follows current LTS, npm follows latest and RTK uses the matching release
+checksum. Use `just rebuild claude-code` at the repo root or
+`docker compose build --no-cache --pull` in this folder. Ordinary cached builds
+may reuse older tools. Upstream-owned locks and compatibility bounds stay intact.
+Floating tools favor freshness, not reproducibility: upstream changes or outages
+can break builds or compatibility. Do not restore pins without explicit owner
+approval. Rebuilds do not restart containers or refresh mounted extensions or
+home-installed binaries that shadow the image's PATH.

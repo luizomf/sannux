@@ -108,6 +108,7 @@ templates:
 # Run repository contract checks
 check:
   @python3 scripts/check-doc-contract.py
+  @python3 scripts/test-tool-update-policy.py
 
 # Create a template .env from .env.example without overwriting an existing one
 init template:
@@ -151,10 +152,10 @@ build template:
   @just _require-env {{template}}
   @cd templates/{{template}} && {{compose_env}} docker compose build
 
-# Build with no cache
+# Resolve current tools without cache, including floating external image stages
 rebuild template:
   @just _require-env {{template}}
-  @cd templates/{{template}} && {{compose_env}} docker compose build --no-cache
+  @cd templates/{{template}} && {{compose_env}} docker compose build --no-cache --pull
 
 # Run the agent in an ephemeral container
 run template *args:

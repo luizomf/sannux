@@ -380,7 +380,7 @@ A partir desta pasta de template, sem `just`:
 ./setup-host.sh
 docker compose config --no-env-resolution
 docker compose build
-docker compose build --no-cache
+docker compose build --no-cache --pull
 docker compose run --rm agent setup
 docker compose run --rm agent model
 docker compose run --rm agent
@@ -402,7 +402,11 @@ Hermes é uma codebase Python com superfície ampla, não um simples CLI em npm.
 - Base Debian trixie-slim fixada por digest.
 - Hermes Agent instalado pelo `install.sh` oficial com código em
   `/usr/local/lib/hermes-agent` e comando em `/usr/local/bin/hermes`.
-- `uv` mais Python 3.11, gerenciados pelo instalador do Hermes.
+- `uv` atual e o runtime Python escolhido pelo instalador upstream do Hermes
+  (atualmente Python 3.11). Isso é compatibilidade do upstream, não pin do sannux.
+- Código `main` atual do upstream, preservando `uv.lock`, locks npm, limites de
+  engines e regras de idade das releases. `uv sync --locked` e `npm ci` continuam;
+  npm segue latest em vez do npm embarcado historicamente incompatível.
 - Extra `[all]` curado do Hermes mais `[messaging]`, então o gateway tem
   dependências de adapters Telegram, Discord e Slack disponíveis em runtime.
 - Frontend do dashboard compilado em
@@ -468,7 +472,7 @@ Edite `Dockerfile` e `compose.yml` diretamente. Adicione as ferramentas que voc�
 usa, ative flags de segurança mais restritas, passe `--gpus` para servir modelos
 localmente ou troque a imagem base. Depois de mudar o `Dockerfile`, rode
 `just rebuild hermes` a partir da raiz do repositório ou
-`docker compose build --no-cache` a partir desta pasta de template.
+`docker compose build --no-cache --pull` a partir desta pasta de template.
 
 ### Instalando ferramentas extras
 
@@ -480,9 +484,8 @@ O Hermes consegue delegar trabalho para muitas ferramentas externas quando elas
 existem no contêiner, mas este template intencionalmente não pré-instala toda
 CLI de agente possível. Codex, Claude Code, Gemini, Pi, opencode e harnesses
 parecidos têm seus próprios modelos de instalação, auth, atualização e
-segurança. Adicione no `Dockerfile` só o que você precisa, fixe versões quando o
-instalador permitir e valide cada CLI com `--version` ou um smoke test durante o
-build.
+segurança. Adicione no `Dockerfile` só o que você precisa, siga os canais oficiais
+stable/latest e valide cada CLI com `--version` ou um smoke test durante o build.
 
 Por exemplo, mantenha ferramentas opcionais de delegação em um bloco local
 óbvio:
@@ -515,15 +518,28 @@ durante o build da imagem, não como usuário `agent` em runtime:
 ```dockerfile
 RUN cd /usr/local/lib/hermes-agent \
     && UV_PROJECT_ENVIRONMENT=/usr/local/lib/hermes-agent/venv \
-        /root/.local/bin/uv sync --extra all --extra messaging --locked
+        /root/.hermes/bin/uv sync --extra all --extra messaging --locked
 ```
 
 Se você precisar de outro extra upstream do Hermes, adicione outro
 `--extra nome` ali e valide com um import ou comando no mesmo bloco `RUN`. Se
-precisar de um pacote Python arbitrário que não está no lockfile do Hermes, fixe
-a versão deliberadamente e entenda que ele fica fora do conjunto de dependências
-hash-locked do Hermes.
+precisar de um pacote Python arbitrário que não está no lockfile do Hermes,
+entenda que ele fica fora do conjunto de dependências hash-locked do Hermes.
+Siga a release atual do upstream; qualquer pin proposto exige aprovação explícita
+do dono.
 
 Não dependa de `pip install` dentro de
 `docker compose run --rm --entrypoint bash agent`: o venv do Hermes é gerenciado
 pela imagem e root-owned de propósito.
+
+## Atualização das ferramentas
+
+Somente a base Debian fica fixada. Ferramentas seguem stable/latest do upstream;
+Node.js segue o LTS atual, npm segue latest e RTK usa o checksum da mesma release.
+Use `just rebuild hermes` na raiz ou `docker compose build --no-cache --pull`
+nesta pasta. Builds comuns com cache podem reutilizar ferramentas antigas.
+Locks e limites de compatibilidade mantidos pelo upstream são preservados.
+Versões flutuantes favorecem atualização, não reprodutibilidade: mudanças ou
+falhas do upstream podem quebrar builds ou compatibilidade. Não reintroduza pins
+sem aprovação explícita do dono. Rebuilds não reiniciam contêineres nem atualizam
+extensões montadas ou binários da home que tenham precedência no PATH.

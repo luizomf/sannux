@@ -242,7 +242,7 @@ público.
 ## O que vem dentro
 
 - Base `debian trixie-slim` fixada por digest.
-- Node.js 22 LTS + Gemini CLI (`@google/gemini-cli`).
+- Node.js LTS atual + Gemini CLI (`@google/gemini-cli`).
 - Python 3 + pip + venv, para o agente conseguir abrir tarefas em Python.
 - `build-essential` para projetos com dependências nativas.
 - Utilitários de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`,
@@ -271,5 +271,17 @@ usa, ative flags de segurança mais rígidas (`read_only: true`,
 mudar o `Dockerfile`, rode:
 
 ```bash
-docker compose build --no-cache
+docker compose build --no-cache --pull
 ```
+
+## Atualização das ferramentas
+
+Somente a base Debian fica fixada. Ferramentas seguem stable/latest do upstream;
+Node.js segue o LTS atual, npm segue latest e RTK usa o checksum da mesma release.
+Use `just rebuild gemini` na raiz ou `docker compose build --no-cache --pull`
+nesta pasta. Builds comuns com cache podem reutilizar ferramentas antigas.
+Locks e limites de compatibilidade mantidos pelo upstream são preservados.
+Versões flutuantes favorecem atualização, não reprodutibilidade: mudanças ou
+falhas do upstream podem quebrar builds ou compatibilidade. Não reintroduza pins
+sem aprovação explícita do dono. Rebuilds não reiniciam contêineres nem atualizam
+extensões montadas ou binários da home que tenham precedência no PATH.

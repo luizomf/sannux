@@ -47,6 +47,39 @@ Templates must keep these defaults unless the exception is documented:
   user-specific host paths.
 - Keep template docs in sync with root docs when user-facing behavior changes.
 
+## Tool Update Policy
+
+Only the Debian base image is pinned. Repository-controlled installed tools
+follow upstream stable/latest distribution channels; Node.js follows current
+LTS, not a numeric major. This includes RTK, npm, Codex and uv images. New tool
+version, major, tag, commit or digest pins require explicit owner approval,
+including proposed workarounds for compatibility regressions.
+
+`just rebuild <template>` uses `docker compose build --no-cache --pull`:
+installers resolve current releases again and external image stages refresh.
+Normal cached builds may reuse older tools. Rebuilds do not restart containers
+or update mounted extension snapshots, application state or home-installed
+binaries that override the image's PATH.
+
+Resolve a release once before fetching its artifact and matching upstream
+checksum; fail on missing assets or checksum mismatch. Keep image-installed
+executables usable by non-root users independently of the mounted home.
+Use simple official installers rather than a custom update framework.
+
+Inspect real CLI/API/schema and engine dependencies before changing selectors.
+Keep meaningful capability tests instead of asserting a historical version.
+Upstream-owned dependency locks, engine bounds, release-aging rules and managed
+runtime constraints (such as Hermes' Python) are not sannux tool pins: consume
+those with the current upstream source, without rewriting them. Protocol/schema
+versions, Dockerfile syntax, model examples and UID/port values are not tool pins.
+Debian packages track the repositories of the pinned Debian distribution, not
+necessarily each project's newest release.
+
+Floating tools favor fresh rebuilds over reproducibility: upstream changes or
+outages can break a build or compatibility. Report concrete failures; do not
+silently restore pins or weaken security/compatibility checks. See
+[tool-update-compatibility.md](tool-update-compatibility.md) for the initial audit.
+
 ## Config Contract
 
 The initial persistent config is allowed to contain CLI config and auth state for

@@ -228,8 +228,20 @@ the project folder the remote app should see, and keep the persistent
 - OpenSSH server.
 - Codex CLI.
 - `bubblewrap`, required by Codex startup checks on Linux.
-- Node.js 22 LTS.
+- Current Node.js LTS.
 - Python 3 + pip + venv.
 - `build-essential` for native deps.
 - CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.
 - Common archive helpers used by coding agents and remote apps.
+
+## Tool updates
+
+Only the Debian base is pinned. Tools follow upstream stable/latest channels;
+Node.js follows current LTS, npm follows latest and RTK uses the matching release
+checksum. Use `just rebuild remote-dev` at the repo root or
+`docker compose build --no-cache --pull` in this folder. Ordinary cached builds
+may reuse older tools. Upstream-owned locks and compatibility bounds stay intact.
+Floating tools favor freshness, not reproducibility: upstream changes or outages
+can break builds or compatibility. Do not restore pins without explicit owner
+approval. Rebuilds do not restart containers or refresh mounted extensions or
+home-installed binaries that shadow the image's PATH.

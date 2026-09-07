@@ -154,6 +154,8 @@ class ContractCheck:
                 "rule to consult the template contract",
             )
             self.require_contains(relative, text, "just check", "contract check")
+            self.require_contains(relative, text, "## Shared Runtime Maintenance Checklist",
+                                  "shared-runtime maintenance checklist")
             self.require_contains(
                 relative,
                 text,
@@ -791,12 +793,12 @@ class ContractCheck:
         if not os.access(script_path, os.X_OK):
             self.fail(relative, "entrypoint script is not executable")
         text = self.read(relative)
-        self.require_contains(
-            relative,
-            text,
-            "curl -fsSL https://antigravity.google/cli/install.sh | bash >&2",
-            "installer output redirected away from stdout",
-        )
+        if "curl " in text:
+            self.fail(relative, "install agy at image build, not on first run")
+        dockerfile = self.read("templates/agy/Dockerfile")
+        self.require_terms("templates/agy/Dockerfile", dockerfile,
+                           ["https://antigravity.google/cli/install.sh",
+                            "--dir /usr/local/bin", "agy --version"])
         self.require_contains(
             relative,
             text,
@@ -941,26 +943,57 @@ class ContractCheck:
     def check_pi_dockerfile(self) -> None:
         relative = "templates/pi/Dockerfile"
         text = self.read(relative)
-        # Dependency regression guard, not a user-selected model constraint.
-        # 0.151.0 omitted a model exposed by 0.153.3 with identical auth.
-        self.require_regex(
-            relative,
-            text,
-            r"^ARG CODEX_VERSION=0\.153\.3$",
-            "Codex CLI 0.153.3 catalog-compatible pin",
-        )
         self.require_contains(
-            relative,
-            text,
-            'npm install -g "@openai/codex@${CODEX_VERSION}"',
-            "installation of the pinned Codex package",
+            relative, text,
+            "COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/",
+            "floating uv/uvx installed outside the mounted home",
         )
-        self.require_contains(
-            relative,
-            text,
-            'test "$(codex --version)" = "codex-cli ${CODEX_VERSION}"',
-            "build-time Codex version verification",
-        )
+
+    def check_tool_update_policy(self) -> None:
+        # Owner policy: channel selectors, not repository-owned tool versions.
+        # These are structural guards, not a promise of upstream compatibility.
+        for dockerfile in sorted(self.path("templates").glob("*/Dockerfile")):
+            relative = str(dockerfile.relative_to(self.root))
+            text = self.read(relative)
+            code = "\n".join(line for line in text.splitlines()
+                             if not line.lstrip().startswith("#"))
+            forbidden = [
+                r"\b\w*(?:VERSION|SHA256|_TAG|_COMMIT)\s*=\s*[\"']?(?:v?\d|[a-f0-9]{40})",
+                r"setup_\d+\.x",
+                r"@[~^<>=]*\d+(?:\.\d+)*",
+                r"https?://\S*/(?:v?\d+\.\d+[^/\s]*|[a-f0-9]{40})/",
+                r"--(?:branch|tag)\s+[\"']?(?:v?\d|[a-f0-9]{40})",
+            ]
+            if any(re.search(pattern, code) for pattern in forbidden):
+                self.fail(relative, "tool update policy forbids fixed tool versions/checksums")
+            for line in code.splitlines():
+                if "@sha256:" in line and not line.startswith("FROM debian:"):
+                    self.fail(relative, "only the Debian base may be digest-pinned")
+            self.require_regex(relative, text, r"^FROM debian:\S+@sha256:[a-f0-9]{64}$",
+                               "digest-pinned Debian base")
+            self.require_terms(relative, text, [
+                "https://deb.nodesource.com/setup_lts.x",
+                "npm install --global --engine-strict npm@latest",
+                "https://api.github.com/repos/rtk-ai/rtk/releases/latest",
+                "checksums.txt", "sha256sum -c -",
+                "x86_64-unknown-linux-musl", "aarch64-unknown-linux-gnu",
+                "Unsupported RTK architecture", "rtk --version",
+                "node --version", "npm --version",
+            ])
+            if dockerfile.parent.name in {"codex", "codex-ollama", "pi", "remote-dev"}:
+                self.require_contains(relative, text, "npm install -g @openai/codex@latest",
+                                      "floating Codex installation")
+                self.require_terms(relative, text, ["codex --version", "codex exec --help",
+                                                   "codex app-server --help"])
+        self.require_contains("justfile", self.read("justfile"),
+                              "docker compose build --no-cache --pull",
+                              "uncached rebuild with refreshed external images")
+        hermes = self.read("templates/hermes/Dockerfile")
+        self.require_terms("templates/hermes/Dockerfile", hermes,
+                           ["--locked", "npm ci --no-audit --no-fund"])
+        for relative in ["AGENTS.md", "CLAUDE.md", "docs/template-contract.md"]:
+            self.require_terms(relative, self.read(relative),
+                               ["Only the Debian base image", "owner approval"])
 
     def check_pi_compose(self) -> None:
         relative = "templates/pi/compose.yml"
@@ -1183,6 +1216,7 @@ class ContractCheck:
         self.check_opencode_setup_script()
         self.check_pi_readmes()
         self.check_pi_dockerfile()
+        self.check_tool_update_policy()
         self.check_pi_compose()
         self.check_pi_env_example()
         self.check_pi_setup_script()

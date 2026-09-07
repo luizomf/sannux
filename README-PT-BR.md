@@ -26,8 +26,28 @@ Cada modelo reside em `templates/<template>/` e é autossuficiente. Você pode
 clonar o repositório inteiro e usar o `justfile` na raiz, ou copiar uma pasta de
 modelo para um VPS e usar o Docker Compose convencional.
 
-Todas as imagens incluem um binário RTK fixado e verificado por checksum. A
-imagem do Pi também inclui um Codex CLI fixado para extensões e agentes aninhados.
+Todas as imagens incluem o RTK mais recente, verificado por checksum. A imagem
+do Pi também inclui o Codex CLI mais recente para extensões e agentes aninhados.
+
+Somente a imagem base Debian fica fixada. Ferramentas instaladas seguem canais
+stable/latest do upstream; Node.js segue o LTS atual e npm segue latest.
+Use `just rebuild <template>` ou `docker compose build --no-cache --pull` na pasta
+do template para resolver ferramentas atuais, incluindo a imagem oficial
+`uv:latest` do Pi. Builds comuns com cache podem reutilizar ferramentas antigas.
+Pacotes Debian atualizam dentro da distribuição Debian fixada; locks de
+dependências e limites de runtime do upstream (especialmente Hermes) permanecem.
+
+Versões flutuantes trocam reprodutibilidade por atualização: mudanças ou falhas
+do upstream podem quebrar builds ou compatibilidade. Rebuilds não reiniciam
+contêineres existentes, atualizam extensões montadas nem substituem binários da
+home que tenham precedência no PATH. Não reintroduza pins sem aprovação explícita
+do dono. Veja a [auditoria de compatibilidade](docs/tool-update-compatibility-PT-BR.md).
+
+**Vai manter imagens ou runners compartilhados?** Siga o
+[checklist de manutenção em AGENTS.md](AGENTS.md#shared-runtime-maintenance-checklist).
+Confira consumidores reais, config sintética, uso não-root com home nova e
+contratos dos launchers; registre a cobertura. Smoke tests da imagem Pi **não**
+validam o fluxo do inbox nem o Daily separado; produção exige autorização escopada.
 
 ## Vídeo (PT-BR 🇧🇷)
 
@@ -1078,7 +1098,7 @@ just rebuild codex
 ou:
 
 ```bash
-docker compose build --no-cache
+docker compose build --no-cache --pull
 ```
 
 ## 12. Limites de recursos
@@ -1270,8 +1290,8 @@ just setup agy
 just run agy
 ```
 
-A imagem instala o `agy` pelo instalador oficial do Antigravity na primeira
-inicialização do container. Os settings persistentes ficam em
+A imagem instala o `agy` em `/usr/local/bin` pelo instalador oficial durante o
+build, então uma home nova não precisa de download em runtime. Os settings persistentes ficam em
 `${AGENT_HOME_PATH}/.gemini/antigravity-cli`; trate a árvore `.gemini` inteira
 como estado privado do agente.
 
@@ -1344,10 +1364,9 @@ just run opencode run "Summarize the mounted project."
 
 ### `pi`
 
-Use quando quiser o Pi Coding Agent. A imagem inclui `uv`/`uvx` com versão
-fixada em `/usr/local/bin`, disponíveis ao agente não-root mesmo com
-`/home/agent` nova ou substituída. Rode `just build pi` para incorporar mudanças
-nas ferramentas da imagem.
+Use quando quiser o Pi Coding Agent. A imagem inclui `uv`/`uvx` atuais em
+`/usr/local/bin`, disponíveis ao agente não-root mesmo com `/home/agent` nova ou
+substituída. Use `just rebuild pi` para resolver ferramentas atuais da imagem.
 
 Primeira execução:
 
@@ -1533,7 +1552,7 @@ Bons próximos passos para ambientes mais rigorosos:
 - perfis customizados de seccomp/AppArmor;
 - redes Docker separadas por agente;
 - sem chaves de provedor no `.env`, apenas tokens de curta duração;
-- fixação de imagem e varredura de vulnerabilidades;
+- fixação da imagem base Debian e varredura de vulnerabilidades;
 - usuários Linux separados no host para diferentes famílias de agentes;
 - microVMs quando o isolamento de contêiner não for suficiente.
 
