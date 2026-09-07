@@ -232,10 +232,22 @@ Docker. Monte apenas a pasta de projeto que o app remoto deve ver, e mantenha a
 - Servidor OpenSSH.
 - Codex CLI.
 - `bubblewrap`, exigido pelas checagens de inicialização do Codex no Linux.
-- Node.js 22 LTS.
+- Node.js LTS atual.
 - Python 3 + pip + venv.
 - `build-essential` para dependências nativas.
 - Ferramentas de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`,
   `tmux`.
 - Utilitários comuns de arquivo compactado usados por agentes de código e apps
   remotos.
+
+## Atualização das ferramentas
+
+Somente a base Debian fica fixada. Ferramentas seguem stable/latest do upstream;
+Node.js segue o LTS atual, npm segue latest e RTK usa o checksum da mesma release.
+Use `just rebuild remote-dev` na raiz ou `docker compose build --no-cache --pull`
+nesta pasta. Builds comuns com cache podem reutilizar ferramentas antigas.
+Locks e limites de compatibilidade mantidos pelo upstream são preservados.
+Versões flutuantes favorecem atualização, não reprodutibilidade: mudanças ou
+falhas do upstream podem quebrar builds ou compatibilidade. Não reintroduza pins
+sem aprovação explícita do dono. Rebuilds não reiniciam contêineres nem atualizam
+extensões montadas ou binários da home que tenham precedência no PATH.

@@ -259,7 +259,10 @@ do Claude que você aceita expor para aquela run.
 ## O que tem dentro
 
 - Base Debian trixie-slim fixada por digest.
-- Node.js 24 + Claude Code instalado pelo instalador oficial do Claude.
+- Node.js LTS atual + Claude Code do canal stable do instalador oficial.
+  O binário nativo é copiado para `/usr/local/bin/claude`, disponível com uma home
+  nova sem instalação em runtime. Instalações intencionais em
+  `~/.local/bin/claude` ainda têm precedência.
 - Python 3 + pip + venv.
 - `build-essential` para projetos com dependências nativas.
 - Utilitários de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`,
@@ -286,5 +289,17 @@ Edite `Dockerfile` e `compose.yml` diretamente. Adicione as ferramentas que voc�
 usa, ative flags de segurança mais restritas (`read_only: true`,
 `cap_drop: [ALL]`, `seccomp` customizado) ou troque a imagem base. Depois de
 mudar o `Dockerfile`, rode `just rebuild claude-code` a partir da raiz do
-repositório, ou `docker compose build --no-cache` a partir desta pasta de
+repositório, ou `docker compose build --no-cache --pull` a partir desta pasta de
 template.
+
+## Atualização das ferramentas
+
+Somente a base Debian fica fixada. Ferramentas seguem stable/latest do upstream;
+Node.js segue o LTS atual, npm segue latest e RTK usa o checksum da mesma release.
+Use `just rebuild claude-code` na raiz ou `docker compose build --no-cache --pull`
+nesta pasta. Builds comuns com cache podem reutilizar ferramentas antigas.
+Locks e limites de compatibilidade mantidos pelo upstream são preservados.
+Versões flutuantes favorecem atualização, não reprodutibilidade: mudanças ou
+falhas do upstream podem quebrar builds ou compatibilidade. Não reintroduza pins
+sem aprovação explícita do dono. Rebuilds não reiniciam contêineres nem atualizam
+extensões montadas ou binários da home que tenham precedência no PATH.

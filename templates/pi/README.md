@@ -335,7 +335,7 @@ From this template folder, without `just`:
 ./setup-host.sh
 docker compose config --no-env-resolution
 docker compose build
-docker compose build --no-cache
+docker compose build --no-cache --pull
 docker compose run --rm agent
 docker compose run --rm --entrypoint bash agent
 docker compose down -v
@@ -345,10 +345,10 @@ echo "Summarize the mounted project." | docker compose run --rm -T agent -p
 ## What's inside
 
 - Debian trixie-slim base pinned by digest.
-- Node.js 24 LTS + Pi Coding Agent (`@earendil-works/pi-coding-agent`).
-- Codex CLI 0.153.3 (`@openai/codex`) for extensions and nested agent calls.
+- Current Node.js LTS + Pi Coding Agent (`@earendil-works/pi-coding-agent`).
+- Latest Codex CLI (`@openai/codex`) for extensions and nested agent calls.
 - RTK for compact development-command output.
-- Python 3 + pip + venv + uv/uvx 0.11.11 (official image pinned by digest).
+- Python 3 + pip + venv + uv/uvx (official `uv:latest` image).
 - `build-essential` for projects with native deps.
 - CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.
 - Non-root user `agent`, UID/GID matched to your host via build args.
@@ -359,8 +359,8 @@ echo "Summarize the mounted project." | docker compose run --rm -T agent -p
 installed on each run or into the persisted home. Both remain on the non-root
 agent's PATH when `/home/agent` is fresh or replaced.
 
-Rebuild from the repo root with `just build pi`, or from this folder with
-`docker compose build`. Check the built image from this folder:
+Resolve current tools with `just rebuild pi` from the repo root, or
+`docker compose build --no-cache --pull` from this folder. Check the built image:
 
 ```bash
 ./check-uv.sh
@@ -376,13 +376,14 @@ package downloads, provider access, scheduled jobs, or email delivery.
 
 ### Nested Codex catalog compatibility
 
-Codex is pinned to `0.153.3`: with the same dedicated Sannux authentication and
-fresh homes, `0.151.0` omitted `gpt-6-astra` from `codex debug models`, while
-`0.153.3` included it. This changes the CLI dependency, not your selected model
-or reasoning effort. Model access still depends on your provider/account.
+Codex follows npm's latest release. Historical testing found that `0.151.0`
+omitted `gpt-6-astra` while `0.153.3` included it with identical dedicated auth.
+That was an account-specific catalog observation, not a requirement to stay on
+that exact CLI version. Model access still depends on your provider/account;
+rebuilding does not change your selected model or reasoning effort.
 
-After pulling this change, run `just build pi` from the repo root (normal
-Compose build with cache). In the intended run environment, check:
+For an explicitly authorized account integration check, rebuild with
+`just rebuild pi`, then in the intended run environment check:
 
 ```bash
 codex --version
@@ -394,7 +395,14 @@ dedicated Sannux credential in a temporary home, never host Codex auth. A
 `--bundled` or offline catalog does not establish account-specific availability.
 Check the resolved `codex` on PATH too: a home-installed binary can shadow the
 image-managed one. Rebuilding does not update mounted extension/helper snapshots.
-The offline `just check` guard verifies the dependency pin, not live model access.
+The offline `just check` guard enforces floating tools and preserved CLI checks,
+not live model access. Never restore a pin without explicit owner approval.
+
+Run `./check-tools.sh [candidate-image]` for offline non-root Node/npm engine,
+RTK proxy, Pi/Codex CLI flag and browser-fetch/Chromium checks. Its HTTP fixture
+lives only on loopback inside a network-disabled container. Pair it with
+`./check-uv.sh [candidate-image]`. Neither script queries model catalogs, loads
+mounted extension snapshots, or uses credentials.
 
 ## What's mounted
 
@@ -456,4 +464,16 @@ number of processes/threads. Tune the values to your VPS size.
 Edit `Dockerfile` and `compose.yml` directly. Add tools you reach for, adjust Pi
 settings, or tighten Compose settings for your deployment. After changing
 `Dockerfile`, run `just rebuild pi` from the repo root, or
-`docker compose build --no-cache` from this template folder.
+`docker compose build --no-cache --pull` from this template folder.
+
+## Tool updates
+
+Only the Debian base is pinned. Tools follow upstream stable/latest channels;
+Node.js follows current LTS, npm follows latest and RTK uses the matching release
+checksum. Use `just rebuild pi` at the repo root or
+`docker compose build --no-cache --pull` in this folder. Ordinary cached builds
+may reuse older tools. Upstream-owned locks and compatibility bounds stay intact.
+Floating tools favor freshness, not reproducibility: upstream changes or outages
+can break builds or compatibility. Do not restore pins without explicit owner
+approval. Rebuilds do not restart containers or refresh mounted extensions or
+home-installed binaries that shadow the image's PATH.

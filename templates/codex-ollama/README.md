@@ -258,5 +258,17 @@ personal model metadata, prefer `CODEX_MODEL_CATALOG_HOST_PATH` over editing the
 tracked `model_catalog.json`. After changing the image:
 
 ```bash
-docker compose build --no-cache
+docker compose build --no-cache --pull
 ```
+
+## Tool updates
+
+Only the Debian base is pinned. Tools follow upstream stable/latest channels;
+Node.js follows current LTS, npm follows latest and RTK uses the matching release
+checksum. Use `just rebuild codex-ollama` at the repo root or
+`docker compose build --no-cache --pull` in this folder. Ordinary cached builds
+may reuse older tools. Upstream-owned locks and compatibility bounds stay intact.
+Floating tools favor freshness, not reproducibility: upstream changes or outages
+can break builds or compatibility. Do not restore pins without explicit owner
+approval. Rebuilds do not restart containers or refresh mounted extensions or
+home-installed binaries that shadow the image's PATH.

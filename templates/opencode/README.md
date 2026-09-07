@@ -254,7 +254,7 @@ the app inside the container listen on `0.0.0.0`. On a VPS, expose
 ## What's inside
 
 - Debian trixie-slim base pinned by digest.
-- Node.js 22 LTS + OpenCode CLI (`opencode-ai`).
+- Current Node.js LTS + OpenCode CLI (`opencode-ai`).
 - Python 3 + pip + venv, so the agent can spin up Python tasks.
 - `build-essential` for projects with native deps.
 - CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.
@@ -281,5 +281,17 @@ stricter security flags (`read_only: true`, `cap_drop: [ALL]`, custom
 `seccomp`), or swap the base image. After changing the image:
 
 ```bash
-docker compose build --no-cache
+docker compose build --no-cache --pull
 ```
+
+## Tool updates
+
+Only the Debian base is pinned. Tools follow upstream stable/latest channels;
+Node.js follows current LTS, npm follows latest and RTK uses the matching release
+checksum. Use `just rebuild opencode` at the repo root or
+`docker compose build --no-cache --pull` in this folder. Ordinary cached builds
+may reuse older tools. Upstream-owned locks and compatibility bounds stay intact.
+Floating tools favor freshness, not reproducibility: upstream changes or outages
+can break builds or compatibility. Do not restore pins without explicit owner
+approval. Rebuilds do not restart containers or refresh mounted extensions or
+home-installed binaries that shadow the image's PATH.

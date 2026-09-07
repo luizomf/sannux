@@ -375,7 +375,7 @@ From this template folder, without `just`:
 ./setup-host.sh
 docker compose config --no-env-resolution
 docker compose build
-docker compose build --no-cache
+docker compose build --no-cache --pull
 docker compose run --rm agent setup
 docker compose run --rm agent model
 docker compose run --rm agent
@@ -397,7 +397,11 @@ Hermes is a Python codebase with a wide surface area, not a single npm CLI.
 - Debian trixie-slim base pinned by digest.
 - Hermes Agent installed via the official `install.sh` with code at
   `/usr/local/lib/hermes-agent` and command at `/usr/local/bin/hermes`.
-- `uv` plus Python 3.11, managed by the Hermes installer.
+- Current `uv` plus the Python runtime selected by the upstream Hermes installer
+  (currently Python 3.11). This is upstream compatibility policy, not a sannux pin.
+- Current upstream `main` source, with its `uv.lock`, npm locks, engine bounds
+  and release-aging rules preserved. `uv sync --locked` and `npm ci` remain;
+  npm follows latest rather than the historically incompatible bundled npm.
 - Hermes' curated `[all]` extra plus `[messaging]`, so the gateway has Telegram,
   Discord, and Slack adapter dependencies available at runtime.
 - Built dashboard frontend at
@@ -460,7 +464,7 @@ agent home unless you mount it yourself.
 Edit `Dockerfile` and `compose.yml` directly. Add tools you reach for, turn on
 stricter security flags, pass `--gpus` for local model serving, or swap the base
 image. After changing `Dockerfile`, run `just rebuild hermes` from the repo root
-or `docker compose build --no-cache` from this template folder.
+or `docker compose build --no-cache --pull` from this template folder.
 
 ### Installing extra tools
 
@@ -472,7 +476,7 @@ Hermes can delegate work to many external tools when they exist in the
 container, but this template intentionally does not preinstall every possible
 agent CLI. Codex, Claude Code, Gemini, Pi, opencode, and similar harnesses each
 bring their own install, auth, update, and security model. Add the ones you need
-to `Dockerfile`, pin versions when the installer allows it, and verify each one
+to `Dockerfile`, follow official stable/latest channels, and verify each one
 with a `--version` or smoke-test command during the build.
 
 For example, keep optional delegate tools in an obvious local block:
@@ -505,14 +509,27 @@ the image build, not as the `agent` user at runtime:
 ```dockerfile
 RUN cd /usr/local/lib/hermes-agent \
     && UV_PROJECT_ENVIRONMENT=/usr/local/lib/hermes-agent/venv \
-        /root/.local/bin/uv sync --extra all --extra messaging --locked
+        /root/.hermes/bin/uv sync --extra all --extra messaging --locked
 ```
 
 If you need another upstream Hermes extra, add another `--extra name` there and
 verify it with an import or command in the same `RUN` block. If you need an
-arbitrary Python package that is not in Hermes' lockfile, pin it deliberately
-and understand that it is outside Hermes' hash-locked dependency set.
+arbitrary Python package that is not in Hermes' lockfile, understand that it is
+outside Hermes' hash-locked dependency set. Follow the current upstream release;
+any proposed pin requires explicit owner approval.
 
 Do not rely on `pip install` inside
 `docker compose run --rm --entrypoint bash agent`: the Hermes venv is
 image-managed and root-owned on purpose.
+
+## Tool updates
+
+Only the Debian base is pinned. Tools follow upstream stable/latest channels;
+Node.js follows current LTS, npm follows latest and RTK uses the matching release
+checksum. Use `just rebuild hermes` at the repo root or
+`docker compose build --no-cache --pull` in this folder. Ordinary cached builds
+may reuse older tools. Upstream-owned locks and compatibility bounds stay intact.
+Floating tools favor freshness, not reproducibility: upstream changes or outages
+can break builds or compatibility. Do not restore pins without explicit owner
+approval. Rebuilds do not restart containers or refresh mounted extensions or
+home-installed binaries that shadow the image's PATH.

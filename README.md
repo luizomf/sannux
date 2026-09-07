@@ -25,8 +25,28 @@ Each template lives in `templates/<template>/` and is self-contained. You can
 clone the whole repo and use the root `justfile`, or copy one template folder to
 a VPS and use plain Docker Compose.
 
-All images include a pinned, checksum-verified RTK binary. The Pi image also
-bundles a pinned Codex CLI for extensions and nested agent calls.
+All images include the latest checksum-verified RTK release. The Pi image also
+bundles the latest Codex CLI for extensions and nested agent calls.
+
+Only the Debian base image is pinned. Installed tools follow upstream
+stable/latest channels; Node.js follows current LTS and npm follows latest.
+Use `just rebuild <template>` or `docker compose build --no-cache --pull` in the
+template folder to resolve current tools, including Pi's official `uv:latest`
+image. Ordinary cached builds may reuse older tools. Debian packages update
+within the pinned Debian distribution; upstream-owned dependency locks and
+runtime compatibility bounds (notably Hermes') remain intact.
+
+Floating tools trade reproducibility for freshness: upstream changes or outages
+can break builds or compatibility. Rebuilds do not restart existing containers,
+refresh mounted extensions, or replace home-installed binaries that shadow the
+image's PATH. Do not reintroduce tool pins without explicit owner approval.
+See the [compatibility audit](docs/tool-update-compatibility.md).
+
+**Maintaining shared images or runners?** Follow the
+[maintenance checklist in AGENTS.md](AGENTS.md#shared-runtime-maintenance-checklist).
+Check real consumers, synthetic config, fresh-home non-root behavior and launcher
+contracts, then record coverage. Pi image smoke tests do **not** validate the
+inbox or separate Daily workflow; production runs require scoped authorization.
 
 ## Vídeo (PT-BR 🇧🇷)
 
@@ -1057,7 +1077,7 @@ just rebuild codex
 or:
 
 ```bash
-docker compose build --no-cache
+docker compose build --no-cache --pull
 ```
 
 ## 12. Resource caps
@@ -1242,8 +1262,8 @@ just setup agy
 just run agy
 ```
 
-The image installs `agy` from the official Antigravity installer script on first
-container start. Its persistent settings live under
+The image installs `agy` into `/usr/local/bin` from the official Antigravity
+installer during the build, so a fresh home needs no runtime download. Its persistent settings live under
 `${AGENT_HOME_PATH}/.gemini/antigravity-cli`; treat the whole `.gemini` tree as
 private agent state.
 
@@ -1316,9 +1336,9 @@ just run opencode run "Summarize the mounted project."
 
 ### `pi`
 
-Use when you want Pi Coding Agent. The image includes pinned `uv`/`uvx` in
+Use when you want Pi Coding Agent. The image includes current `uv`/`uvx` in
 `/usr/local/bin`, available to the non-root agent even with a fresh or replaced
-`/home/agent`. Rebuild with `just build pi` to pick up image tool changes.
+`/home/agent`. Use `just rebuild pi` to resolve current image tools.
 
 First run:
 
@@ -1504,7 +1524,7 @@ steps for stricter environments:
 - custom seccomp/AppArmor profiles;
 - separate Docker networks per agent;
 - no provider keys in `.env`, only short-lived tokens;
-- image pinning and vulnerability scanning;
+- Debian base image pinning and vulnerability scanning;
 - separate Linux users on the host for different agent families;
 - microVMs when container isolation is not enough.
 
