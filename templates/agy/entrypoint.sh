@@ -5,9 +5,5 @@ set -Eou pipefail
 
 export PATH="$HOME/.local/bin:$PATH"
 
-if ! command -v agy >/dev/null 2>&1
-then
-  curl -fsSL https://antigravity.google/cli/install.sh | bash >&2
-fi
-
+# The image supplies agy; explicit home-installed overrides remain supported.
 exec agy "$@"

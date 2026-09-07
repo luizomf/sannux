@@ -120,6 +120,12 @@ For this repo specifically:
 - Keep the happy path safe for users who barely read the docs. The template
   should fail fast when required host paths are missing instead of silently
   creating repo-local workspaces or agent homes.
+- Only the Debian base image is pinned. Installed tools must follow upstream
+  stable/latest channels (Node uses current LTS), resolved on uncached rebuilds.
+  Do not introduce tool version, major, tag, commit, or digest pins without
+  explicit owner approval, even to fix a compatibility regression. Investigate
+  consumers and report real incompatibilities instead. Preserve upstream-owned
+  dependency locks and compatibility schemas; do not blindly unpin those.
 - Dockerfiles and compose files should stay readable and easy to audit.
 - Security hardening should be practical and documented. Avoid "paranoid" setup
   that makes the template hard to run unless the task asks for it.
@@ -138,6 +144,25 @@ For this repo specifically:
 - Preserve original errors when wrapping exceptions.
 
 ---
+
+## Shared Runtime Maintenance Checklist
+
+Before delivering image, script, Compose, config or `.env.example` changes:
+
+- [ ] Inspect actual consumers and version-dependent CLI/API/schema/engine behavior.
+- [ ] Validate changed image/scripts/config/environment contracts without sourcing,
+      exposing or changing real secrets. Use synthetic Compose inputs.
+- [ ] Use an uncached build with `--pull` when refreshing tools; test a candidate
+      tag instead of replacing active images.
+- [ ] Smoke-test without credentials as non-root with a fresh replacement home.
+- [ ] Check applicable launcher arguments, stdin, PATH, mounts, config and
+      compatibility surfaces; preserve unrelated security guards.
+- [ ] Record actual checks, platforms, consumers covered and remaining limits.
+
+The shared Pi image has multiple consumers, including github-agent-inbox and a
+separate Daily runner. Image smoke tests do not validate either full workflow.
+Do not run or modify Daily, production schedules, mail or model calls without
+explicit scoped owner authorization.
 
 ## Tests and Verification
 
