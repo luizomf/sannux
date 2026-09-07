@@ -1316,7 +1316,9 @@ just run opencode run "Summarize the mounted project."
 
 ### `pi`
 
-Use when you want Pi Coding Agent.
+Use when you want Pi Coding Agent. The image includes pinned `uv`/`uvx` in
+`/usr/local/bin`, available to the non-root agent even with a fresh or replaced
+`/home/agent`. Rebuild with `just build pi` to pick up image tool changes.
 
 First run:
 

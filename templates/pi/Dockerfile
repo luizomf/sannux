@@ -113,6 +113,9 @@ RUN set -eux; \
 USER agent
 WORKDIR /workspace
 
+# Keep uv/uvx outside the mounted agent home, available to every fresh run.
+COPY --from=ghcr.io/astral-sh/uv:0.11.11@sha256:798712e57f879c5393777cbda2bb309b29fcdeb0532129d4b1c3125c5385975a /uv /uvx /usr/local/bin/
+
 # Image entrypoint. With ENTRYPOINT (instead of CMD), any args passed to
 # `docker compose run --rm agent <args>` go straight to `pi`. So:
 #   docker compose run --rm agent             -> pi

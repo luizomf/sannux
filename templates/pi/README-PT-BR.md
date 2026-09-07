@@ -352,11 +352,32 @@ echo "Summarize the mounted project." | docker compose run --rm -T agent -p
 - Node.js 24 LTS + Pi Coding Agent (`@earendil-works/pi-coding-agent`).
 - Codex CLI 0.153.3 (`@openai/codex`) para extensões e agentes aninhados.
 - RTK para saída compacta de comandos de desenvolvimento.
-- Python 3 + pip + venv.
+- Python 3 + pip + venv + uv/uvx 0.11.11 (imagem oficial fixada por digest).
 - `build-essential` para projetos com dependências nativas.
 - Utilitários de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`,
   `tmux`.
 - Usuário não-root `agent`, com UID/GID alinhados ao host via build args.
+
+### Ferramentas Python com uv
+
+`uv` e `uvx` são copiados para `/usr/local/bin` durante o build da imagem, não
+instalados a cada run nem na home persistida. Ambos continuam no PATH do agente
+não-root quando `/home/agent` é nova ou substituída.
+
+Reconstrua pela raiz com `just build pi`, ou por esta pasta com
+`docker compose build`. Confira a imagem construída a partir desta pasta:
+
+```bash
+./check-uv.sh
+# Tag candidata opcional, antes de substituir sannux/pi:latest:
+./check-uv.sh sannux/pi:uv-candidate
+```
+
+Esse teste de regressão offline usa Docker diretamente, sem ler `.env` nem
+montar pastas ou credenciais do host. Ele substitui `/home/agent` por um tmpfs
+vazio, confere o usuário não-root e os caminhos das ferramentas, cria um
+virtualenv com o Python da imagem e executa Python via `uv run`. Não testa
+download de pacotes, acesso a providers, jobs agendados nem entrega de email.
 
 ### Compatibilidade do catálogo do Codex aninhado
 

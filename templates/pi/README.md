@@ -348,10 +348,31 @@ echo "Summarize the mounted project." | docker compose run --rm -T agent -p
 - Node.js 24 LTS + Pi Coding Agent (`@earendil-works/pi-coding-agent`).
 - Codex CLI 0.153.3 (`@openai/codex`) for extensions and nested agent calls.
 - RTK for compact development-command output.
-- Python 3 + pip + venv.
+- Python 3 + pip + venv + uv/uvx 0.11.11 (official image pinned by digest).
 - `build-essential` for projects with native deps.
 - CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.
 - Non-root user `agent`, UID/GID matched to your host via build args.
+
+### Python tooling with uv
+
+`uv` and `uvx` are copied into `/usr/local/bin` at image-build time, not
+installed on each run or into the persisted home. Both remain on the non-root
+agent's PATH when `/home/agent` is fresh or replaced.
+
+Rebuild from the repo root with `just build pi`, or from this folder with
+`docker compose build`. Check the built image from this folder:
+
+```bash
+./check-uv.sh
+# Optional candidate tag, before replacing sannux/pi:latest:
+./check-uv.sh sannux/pi:uv-candidate
+```
+
+This offline regression check uses Docker directly, without reading `.env` or
+mounting host folders/credentials. It replaces `/home/agent` with an empty
+tmpfs, checks the non-root user and tool paths, then creates a virtualenv with
+the image's Python and executes Python through `uv run`. It does not test
+package downloads, provider access, scheduled jobs, or email delivery.
 
 ### Nested Codex catalog compatibility
 
