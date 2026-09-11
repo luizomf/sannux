@@ -50,6 +50,10 @@ documentation tweaks:
   the branch.
 - Check open issues before starting work. Reuse an existing issue when it
   matches the request; otherwise create or propose one.
+- Before reviewing, updating, or commenting on a PR, check its current state.
+  Merged or closed PRs are historical, read-only records: do not modify or
+  comment on them unless the user explicitly asks. Put follow-up work in an
+  issue or a new PR.
 - Keep branches focused on one issue and one task.
 - Finish accepted work by squash-merging the PR and deleting the branch.
 - One focused task per session is the default.
