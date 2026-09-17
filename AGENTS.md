@@ -58,6 +58,14 @@ documentation tweaks:
 - Finish accepted work by squash-merging the PR and deleting the branch.
 - One focused task per session is the default.
 
+### Worktree location
+
+All new Git worktrees must live under
+`~/sannux-data/worktrees/<repo>/<worktree_name>`. Never create them inside a
+project checkout or as its sibling. This host-local root is excluded from
+`synchosts`; transfer anything needed on another host deliberately. Do not move
+or remove existing worktrees solely to satisfy this policy.
+
 Commit style:
 
 ```text
