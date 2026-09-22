@@ -6,7 +6,6 @@ model_provider = __CODEX_MODEL_PROVIDER__
 personality = __CODEX_PERSONALITY__
 model_reasoning_effort = __CODEX_MODEL_REASONING_EFFORT__
 openai_base_url = __OLLAMA_BASE_URL__
-base_url = __OLLAMA_BASE_URL__
 model_catalog_json = __CODEX_MODEL_CATALOG_PATH__
 
 approval_policy = __CODEX_APPROVAL_POLICY__
@@ -15,7 +14,6 @@ approvals_reviewer = "user"
 
 [features]
 memories = true
-remote_connections = true
 hooks = true
 
 [memories]
@@ -26,9 +24,7 @@ use_memories = true
 "gpt-5.5" = 4
 
 [profiles.__CODEX_MODEL_PROVIDER_KEY__]
-openai_base_url = __OLLAMA_BASE_URL__
 model_provider = __CODEX_MODEL_PROVIDER__
-forced_login_method = "api"
 
 [model_providers.__CODEX_MODEL_PROVIDER_KEY__]
 name = __CODEX_MODEL_PROVIDER_NAME__
@@ -42,9 +38,6 @@ trust_level = "trusted"
 model = __CODEX_MODEL__
 model_provider = __CODEX_MODEL_PROVIDER__
 model_reasoning_effort = __CODEX_MODEL_REASONING_EFFORT__
-forced_login_method = "api"
-openai_base_url = __OLLAMA_BASE_URL__
-base_url = __OLLAMA_BASE_URL__
 model_catalog_json = __CODEX_MODEL_CATALOG_PATH__
 approval_policy = __CODEX_APPROVAL_POLICY__
 sandbox_mode = __CODEX_SANDBOX_MODE__

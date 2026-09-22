@@ -261,6 +261,13 @@ tracked `model_catalog.json`. After changing the image:
 docker compose build --no-cache --pull
 ```
 
+After changing `codex-config.toml.template`, rerun `./setup-host.sh` to update
+an existing home; it backs up a changed config first. A rebuild alone does not
+regenerate that file. The Ollama endpoint belongs under
+`model_providers.<provider>.base_url`; do not add `base_url`, `openai_base_url`,
+or `forced_login_method` to legacy inline profiles, or enable the unsupported
+`features.remote_connections` setting.
+
 ## Tool updates
 
 Only the Debian base is pinned. Tools follow upstream stable/latest channels;
