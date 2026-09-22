@@ -109,6 +109,7 @@ templates:
 check:
   @python3 scripts/check-doc-contract.py
   @python3 scripts/test-tool-update-policy.py
+  @python3 scripts/test-codex-ollama-config.py
 
 # Create a template .env from .env.example without overwriting an existing one
 init template:

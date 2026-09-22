@@ -265,6 +265,13 @@ vez de editar o `model_catalog.json` versionado. Depois de alterar a imagem:
 docker compose build --no-cache --pull
 ```
 
+Depois de alterar `codex-config.toml.template`, rode `./setup-host.sh` novamente
+para atualizar uma home existente; ele faz backup antes de substituir uma config
+alterada. Só o rebuild não regenera esse arquivo. O endpoint Ollama fica em
+`model_providers.<provider>.base_url`; não adicione `base_url`, `openai_base_url`
+ou `forced_login_method` aos profiles inline legados, nem habilite a opção não
+suportada `features.remote_connections`.
+
 ## Atualização das ferramentas
 
 Somente a base Debian fica fixada. Ferramentas seguem stable/latest do upstream;
