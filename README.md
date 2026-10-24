@@ -42,6 +42,12 @@ refresh mounted extensions, or replace home-installed binaries that shadow the
 image's PATH. Do not reintroduce tool pins without explicit owner approval.
 See the [compatibility audit](docs/tool-update-compatibility.md).
 
+For base-image security updates, first obtain the updated `Dockerfile`: `--pull`
+cannot advance a digest pin. Rebuild on each Docker host, then end and relaunch
+interactive runs or recreate the intended Compose services. Restarting an old
+container still uses its old image. Host OS updates do not patch container
+userland; updating the base does not guarantee that installed tools are CVE-free.
+
 **Maintaining shared images or runners?** Follow the
 [maintenance checklist in AGENTS.md](AGENTS.md#shared-runtime-maintenance-checklist).
 Check real consumers, synthetic config, fresh-home non-root behavior and launcher

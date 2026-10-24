@@ -20,7 +20,7 @@
 #   messaging gateways). Expect a multi-gigabyte image. If you need a leaner
 #   build, edit the install command below to skip extras you don't use.
 
-FROM debian:trixie-slim@sha256:d7e12182ce18b85b93007c1dedf31f2d29e01ccf3182cc4017c709b6259bc132
+FROM debian:trixie-slim@sha256:62bd423aeee912639ca8ee681c2b762cb3e25137e0a92b20be455898a9f034ad
 
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
