@@ -46,10 +46,24 @@ for (const name of ['npm', '@earendil-works/pi-coding-agent', '@openai/codex']) 
         assert(semver.satisfies(process.version, pkg.engines.node), `${name}: ${pkg.engines.node}`);
     }
 }
-// npm may block dependency install scripts; verify the shipped native esbuild
-// binary still handles TypeScript rather than enabling scripts indiscriminately.
-const piRequire = createRequire(`${root}/@earendil-works/pi-coding-agent/package.json`);
-assert(piRequire('esbuild').transformSync('const n: number = 1', { loader: 'ts' }).code.includes('const n = 1'));
+// Exercise Pi's public TypeScript extension loader, not a private dependency.
+// Help includes registered extension flags and exits without a model request.
+fs.writeFileSync('/tmp/sannux-pi-smoke.ts', `
+import type { ExtensionAPI } from '@earendil-works/pi-coding-agent';
+export default function (pi: ExtensionAPI): void {
+    const answer: number = 42;
+    pi.registerFlag('sannux-smoke', {
+        type: 'boolean',
+        description: 'Sannux TypeScript extension: ' + answer,
+    });
+}
+`);
+const { stdout: extensionHelp } = await promisify(execFile)('pi', [
+    '--offline', '--no-extensions', '--extension', '/tmp/sannux-pi-smoke.ts', '--help',
+], { timeout: 30000, maxBuffer: 100000 });
+// Pi can exit successfully even when an extension failed to load.
+assert.match(extensionHelp, /^\s+--sannux-smoke\s+Sannux TypeScript extension: 42\s*$/m,
+    'Pi help must include the flag registered by the TypeScript fixture');
 // Actual Debian Chromium + floating playwright-core + browser-fetch integration.
 // The fixture is in-container loopback only; the container has no external network.
 const server = createServer((request, response) => {
@@ -73,6 +87,6 @@ try {
 } finally {
     await new Promise(resolve => server.close(resolve));
 }
-console.log('Node engines, CLI interfaces and rendered browser-fetch fixture passed');
+console.log('Node engines, CLI interfaces, Pi TypeScript extension and rendered browser-fetch fixture passed');
 JS
 SH
