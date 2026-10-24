@@ -405,9 +405,11 @@ preserva checagens de CLI, não verifica acesso real ao modelo. Nunca restaure u
 pin sem aprovação explícita do dono.
 
 Rode `./check-tools.sh [imagem-candidata]` para testes offline não-root de engines
-Node/npm, RTK proxy, flags dos CLIs Pi/Codex e browser-fetch/Chromium. A página
-HTTP de teste fica apenas no loopback de um contêiner sem rede externa. Combine
-com `./check-uv.sh [imagem-candidata]`. Nenhum script consulta catálogos de modelos,
+Node/npm, RTK proxy, flags dos CLIs Pi/Codex, extensão TypeScript do Pi e
+browser-fetch/Chromium. A extensão descartável registra uma flag que deve aparecer
+na saída de `--help` do Pi; nenhum modelo é invocado. A página HTTP de teste fica
+apenas no loopback de um contêiner sem rede externa. Combine com
+`./check-uv.sh [imagem-candidata]`. Nenhum script consulta catálogos de modelos,
 carrega snapshots de extensões montadas ou usa credenciais.
 
 ## O que é montado

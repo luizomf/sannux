@@ -399,8 +399,10 @@ The offline `just check` guard enforces floating tools and preserved CLI checks,
 not live model access. Never restore a pin without explicit owner approval.
 
 Run `./check-tools.sh [candidate-image]` for offline non-root Node/npm engine,
-RTK proxy, Pi/Codex CLI flag and browser-fetch/Chromium checks. Its HTTP fixture
-lives only on loopback inside a network-disabled container. Pair it with
+RTK proxy, Pi/Codex CLI flag, Pi TypeScript extension and browser-fetch/Chromium
+checks. The disposable extension registers a flag that must appear in Pi's
+`--help` output; no model is invoked. Its HTTP fixture lives only on loopback
+inside a network-disabled container. Pair it with
 `./check-uv.sh [candidate-image]`. Neither script queries model catalogs, loads
 mounted extension snapshots, or uses credentials.
 
