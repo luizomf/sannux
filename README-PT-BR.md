@@ -43,6 +43,13 @@ contêineres existentes, atualizam extensões montadas nem substituem binários 
 home que tenham precedência no PATH. Não reintroduza pins sem aprovação explícita
 do dono. Veja a [auditoria de compatibilidade](docs/tool-update-compatibility-PT-BR.md).
 
+Para correções de segurança da base, primeiro obtenha o `Dockerfile` atualizado:
+`--pull` não avança um digest fixado. Faça o rebuild em cada host Docker e depois
+encerre e abra novamente os runs interativos ou recrie os serviços Compose
+pretendidos. Reiniciar um contêiner antigo continua usando a imagem antiga.
+Atualizar o SO do host não corrige o userland dos contêineres; atualizar a base
+não garante que as ferramentas instaladas estejam livres de CVEs.
+
 **Vai manter imagens ou runners compartilhados?** Siga o
 [checklist de manutenção em AGENTS.md](AGENTS.md#shared-runtime-maintenance-checklist).
 Confira consumidores reais, config sintética, uso não-root com home nova e
