@@ -21,7 +21,7 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 
 ## O que este template entrega
 
-- `Dockerfile`: CLIs do Pi e do Codex, RTK e ferramentas comuns de
+- `Dockerfile`: CLIs do Pi e do Codex, além de ferramentas comuns de
   desenvolvimento em Linux.
 - `compose.yml`: serviço Docker Compose que monta seu projeto em `/workspace` e
   o home do agente em `/home/agent`.
@@ -351,7 +351,6 @@ echo "Summarize the mounted project." | docker compose run --rm -T agent -p
 - Base `debian trixie-slim` fixada por digest.
 - Node.js LTS atual + Pi Coding Agent (`@earendil-works/pi-coding-agent`).
 - Codex CLI mais recente (`@openai/codex`) para extensões e agentes aninhados.
-- RTK para saída compacta de comandos de desenvolvimento.
 - Python 3 + pip + venv + uv/uvx (imagem oficial `uv:latest`).
 - `build-essential` para projetos com dependências nativas.
 - Utilitários de CLI: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`,
@@ -405,8 +404,9 @@ preserva checagens de CLI, não verifica acesso real ao modelo. Nunca restaure u
 pin sem aprovação explícita do dono.
 
 Rode `./check-tools.sh [imagem-candidata]` para testes offline não-root de engines
-Node/npm, RTK proxy, flags dos CLIs Pi/Codex, extensão TypeScript do Pi e
-browser-fetch/Chromium. A extensão descartável registra uma flag que deve aparecer
+Node/npm, flags dos CLIs Pi/Codex, extensão TypeScript do Pi e
+browser-fetch/Chromium. O check também rejeita RTK no PATH da candidata com home
+nova. A extensão descartável registra uma flag que deve aparecer
 na saída de `--help` do Pi; nenhum modelo é invocado. A página HTTP de teste fica
 apenas no loopback de um contêiner sem rede externa. Combine com
 `./check-uv.sh [imagem-candidata]`. Nenhum script consulta catálogos de modelos,
@@ -480,7 +480,7 @@ template.
 ## Atualização das ferramentas
 
 Somente a base Debian fica fixada. Ferramentas seguem stable/latest do upstream;
-Node.js segue o LTS atual, npm segue latest e RTK usa o checksum da mesma release.
+Node.js segue o LTS atual e npm segue latest.
 Use `just rebuild pi` na raiz ou `docker compose build --no-cache --pull`
 nesta pasta. Builds comuns com cache podem reutilizar ferramentas antigas.
 Locks e limites de compatibilidade mantidos pelo upstream são preservados.

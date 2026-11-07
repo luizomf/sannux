@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Offline policy regressions through the contract checker's public --root CLI."""
 
+import re
 import shutil
 import subprocess
 import sys
@@ -51,23 +52,36 @@ class ToolUpdatePolicyTests(unittest.TestCase):
         result = self.check()
         self.assertEqual(result.returncode, 0, result.stderr)
 
-    def test_every_template_rejects_tool_pins_and_lost_verification(self) -> None:
+    def test_no_dockerfile_installs_rtk(self) -> None:
+        dockerfiles = sorted((self.root / "templates").glob("*/Dockerfile"))
+        self.assertEqual(len(dockerfiles), 10)
+        for path in dockerfiles:
+            with self.subTest(template=path.parent.name):
+                self.assertNotRegex(path.read_text(), re.compile(r"\brtk\b", re.IGNORECASE))
+
+    def test_every_template_rejects_tool_pins(self) -> None:
         for path in sorted((self.root / "templates").glob("*/Dockerfile")):
             relative = str(path.relative_to(self.root))
             for old, new, message in [
-                ("RUN set -eux;", "ARG RTK_VERSION=0.46.0\nRUN set -eux;", "tool update policy"),
+                ("ENV DEBIAN_FRONTEND", "ARG TOOL_VERSION=1.2.3\nENV DEBIAN_FRONTEND", "tool update policy"),
                 ("setup_lts.x", "setup_24.x", "tool update policy"),
                 ("npm@latest", "npm@12.0.2", "tool update policy"),
-                ("sha256sum -c -", "true", "sha256sum -c -"),
-                ("aarch64-unknown-linux-gnu", "unsupported-arm", "aarch64-unknown-linux-gnu"),
             ]:
                 with self.subTest(template=path.parent.name, change=new):
                     self.reject_change(relative, old, new, message)
 
-    def test_literal_release_selection_cannot_bypass_latest_resolution(self) -> None:
-        self.reject_change("templates/pi/Dockerfile", '    RTK_ARCHIVE="rtk-',
-                           '    RTK_TAG="v0.46.0"; \\\n    RTK_ARCHIVE="rtk-',
-                           "tool update policy")
+    def test_every_template_rejects_rtk_installation(self) -> None:
+        for path in sorted((self.root / "templates").glob("*/Dockerfile")):
+            relative = str(path.relative_to(self.root))
+            for instruction in [
+                "RUN curl -fsSL https://github.com/rtk-ai/rtk/releases/latest/download/rtk.tar.gz",
+                "COPY rtk /usr/local/bin/rtk",
+                "RUN npm install -g rtk",
+            ]:
+                with self.subTest(template=path.parent.name, instruction=instruction):
+                    self.reject_change(relative, "ENV DEBIAN_FRONTEND",
+                                       instruction + "\nENV DEBIAN_FRONTEND",
+                                       "RTK must not be installed")
 
     def test_codex_floats_without_losing_cli_checks(self) -> None:
         for template in ["pi", "codex", "codex-ollama", "remote-dev"]:

@@ -20,7 +20,7 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 
 ## What this template gives you
 
-- `Dockerfile`: Pi CLI, Codex CLI, RTK, and common Linux development tools.
+- `Dockerfile`: Pi CLI, Codex CLI, and common Linux development tools.
 - `compose.yml`: Docker Compose service that mounts your project at `/workspace`
   and the agent home at `/home/agent`.
 - `setup-host.sh`: creates host folders, writes safe `.env` defaults, and
@@ -347,7 +347,6 @@ echo "Summarize the mounted project." | docker compose run --rm -T agent -p
 - Debian trixie-slim base pinned by digest.
 - Current Node.js LTS + Pi Coding Agent (`@earendil-works/pi-coding-agent`).
 - Latest Codex CLI (`@openai/codex`) for extensions and nested agent calls.
-- RTK for compact development-command output.
 - Python 3 + pip + venv + uv/uvx (official `uv:latest` image).
 - `build-essential` for projects with native deps.
 - CLI helpers: `git`, `rg`, `fd`, `jq`, `fzf`, `bat`, `tree`, `less`, `tmux`.
@@ -399,8 +398,9 @@ The offline `just check` guard enforces floating tools and preserved CLI checks,
 not live model access. Never restore a pin without explicit owner approval.
 
 Run `./check-tools.sh [candidate-image]` for offline non-root Node/npm engine,
-RTK proxy, Pi/Codex CLI flag, Pi TypeScript extension and browser-fetch/Chromium
-checks. The disposable extension registers a flag that must appear in Pi's
+Pi/Codex CLI flag, Pi TypeScript extension and browser-fetch/Chromium checks.
+The check also rejects RTK on PATH in the fresh candidate. The disposable
+extension registers a flag that must appear in Pi's
 `--help` output; no model is invoked. Its HTTP fixture lives only on loopback
 inside a network-disabled container. Pair it with
 `./check-uv.sh [candidate-image]`. Neither script queries model catalogs, loads
@@ -471,8 +471,8 @@ settings, or tighten Compose settings for your deployment. After changing
 ## Tool updates
 
 Only the Debian base is pinned. Tools follow upstream stable/latest channels;
-Node.js follows current LTS, npm follows latest and RTK uses the matching release
-checksum. Use `just rebuild pi` at the repo root or
+Node.js follows current LTS and npm follows latest.
+Use `just rebuild pi` at the repo root or
 `docker compose build --no-cache --pull` in this folder. Ordinary cached builds
 may reuse older tools. Upstream-owned locks and compatibility bounds stay intact.
 Floating tools favor freshness, not reproducibility: upstream changes or outages

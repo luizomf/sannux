@@ -12,12 +12,14 @@ docker run --rm -i --pull=never --network none --read-only \
 set -euo pipefail
 test "$(id -u)" -ne 0
 test -z "$(ls -A "$HOME")"
-for tool in node npm rtk pi codex; do
+if command -v rtk >/dev/null 2>&1; then
+    echo "RTK must not be installed in the fresh offline candidate image" >&2
+    exit 1
+fi
+for tool in node npm pi codex; do
     command -v "$tool"
     timeout 30 "$tool" --version
 done
-test "$(timeout 30 rtk proxy printf 'proxy-ok')" = proxy-ok
-timeout 30 rtk git --help >/dev/null
 timeout 30 pi --help > /tmp/pi-help
 for flag in --print --no-session --tools; do grep -q -- "$flag" /tmp/pi-help; done
 timeout 30 codex exec --help > /tmp/codex-help
