@@ -7,7 +7,12 @@ Only the Debian base stays pinned. This audit records observations, not new
 version requirements. See the [contract](template-contract.md) and
 [maintenance checklist](../AGENTS.md#shared-runtime-maintenance-checklist).
 
-## Inventory and decisions
+> **Historical audit (#28):** RTK is no longer installed in any Sannux template
+> following [#37](https://github.com/luizomf/sannux/issues/37). RTK installation,
+> checksums, architecture support and smoke results below describe the earlier
+> images and tests only, not the current template contract or validation.
+
+## Historical inventory and decisions
 
 | Surface | Finding and decision |
 | --- | --- |
@@ -25,7 +30,7 @@ Dockerfile syntax version, schema/protocol versions, model examples, ports and
 UID/GID defaults were not treated as pins. Debian packages remain constrained by
 the selected Debian distribution's repositories, not individual upstream latest.
 
-## Actual validation
+## Validation recorded for #28
 
 - Baseline `just check`: failed on three stale Pi Codex pin requirements.
 - New cross-template policy guard: RED on all ten Dockerfiles, then GREEN.

@@ -20,8 +20,7 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 
 ## O que este template entrega
 
-- `Dockerfile`: OpenCode CLI mais ferramentas comuns de desenvolvimento Linux,
-  incluindo RTK.
+- `Dockerfile`: OpenCode CLI mais ferramentas comuns de desenvolvimento Linux.
 - `compose.yml`: serviço do Docker Compose que monta seu projeto em `/workspace`
   e a agent home em `/home/agent`.
 - `setup-host.sh`: cria as pastas no host, escreve defaults seguros no `.env` e
@@ -296,7 +295,7 @@ docker compose build --no-cache --pull
 ## Atualização das ferramentas
 
 Somente a base Debian fica fixada. Ferramentas seguem stable/latest do upstream;
-Node.js segue o LTS atual, npm segue latest e RTK usa o checksum da mesma release.
+Node.js segue o LTS atual e npm segue latest.
 Use `just rebuild opencode` na raiz ou `docker compose build --no-cache --pull`
 nesta pasta. Builds comuns com cache podem reutilizar ferramentas antigas.
 Locks e limites de compatibilidade mantidos pelo upstream são preservados.

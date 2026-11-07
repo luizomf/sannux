@@ -18,8 +18,7 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 
 ## O que este template entrega
 
-- `Dockerfile`: Hermes Agent mais ferramentas comuns de desenvolvimento Linux,
-  incluindo RTK.
+- `Dockerfile`: Hermes Agent mais ferramentas comuns de desenvolvimento Linux.
 - `compose.yml`: um serviço interativo `agent` mais serviços `gateway` e
   `dashboard` no perfil daemon.
 - `setup-host.sh`: cria as pastas no host, escreve defaults seguros no `.env` e
@@ -535,7 +534,7 @@ pela imagem e root-owned de propósito.
 ## Atualização das ferramentas
 
 Somente a base Debian fica fixada. Ferramentas seguem stable/latest do upstream;
-Node.js segue o LTS atual, npm segue latest e RTK usa o checksum da mesma release.
+Node.js segue o LTS atual e npm segue latest.
 Use `just rebuild hermes` na raiz ou `docker compose build --no-cache --pull`
 nesta pasta. Builds comuns com cache podem reutilizar ferramentas antigas.
 Locks e limites de compatibilidade mantidos pelo upstream são preservados.

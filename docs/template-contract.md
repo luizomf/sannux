@@ -51,7 +51,7 @@ Templates must keep these defaults unless the exception is documented:
 
 Only the Debian base image is pinned. Repository-controlled installed tools
 follow upstream stable/latest distribution channels; Node.js follows current
-LTS, not a numeric major. This includes RTK, npm, Codex and uv images. New tool
+LTS, not a numeric major. This includes npm, Codex and uv images. New tool
 version, major, tag, commit or digest pins require explicit owner approval,
 including proposed workarounds for compatibility regressions.
 

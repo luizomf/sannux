@@ -26,8 +26,7 @@ Cada modelo reside em `templates/<template>/` e é autossuficiente. Você pode
 clonar o repositório inteiro e usar o `justfile` na raiz, ou copiar uma pasta de
 modelo para um VPS e usar o Docker Compose convencional.
 
-Todas as imagens incluem o RTK mais recente, verificado por checksum. A imagem
-do Pi também inclui o Codex CLI mais recente para extensões e agentes aninhados.
+A imagem do Pi inclui o Codex CLI mais recente para extensões e agentes aninhados.
 
 Somente a imagem base Debian fica fixada. Ferramentas instaladas seguem canais
 stable/latest do upstream; Node.js segue o LTS atual e npm segue latest.

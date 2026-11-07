@@ -39,35 +39,6 @@ RUN apt-get update \
     && git lfs install --system \
     && rm -rf /var/lib/apt/lists/*
 
-# RTK compresses verbose development-command output before it reaches an agent.
-# Resolve latest once, then verify the matching upstream release checksum.
-RUN set -eux; \
-    case "$(dpkg --print-architecture)" in \
-        amd64) \
-            RTK_TARGET="x86_64-unknown-linux-musl"; \
-            ;; \
-        arm64) \
-            RTK_TARGET="aarch64-unknown-linux-gnu"; \
-            ;; \
-        *) \
-            echo "Unsupported RTK architecture: $(dpkg --print-architecture)" >&2; \
-            exit 1; \
-            ;; \
-    esac; \
-    curl -fsSL https://api.github.com/repos/rtk-ai/rtk/releases/latest -o /tmp/rtk-release.json; \
-    RTK_TAG="$(jq -er '.tag_name | select(test("^v[0-9]+[.][0-9]+[.][0-9]+$"))' /tmp/rtk-release.json)"; \
-    RTK_ARCHIVE="rtk-${RTK_TARGET}.tar.gz"; \
-    RTK_URL="https://github.com/rtk-ai/rtk/releases/download/${RTK_TAG}"; \
-    cd /tmp; \
-    curl -fsSL "${RTK_URL}/${RTK_ARCHIVE}" -o "${RTK_ARCHIVE}"; \
-    curl -fsSL "${RTK_URL}/checksums.txt" -o rtk-checksums.txt; \
-    awk -v archive="${RTK_ARCHIVE}" '$2 == archive {print; found++} END {if (found != 1) exit 1}' \
-        rtk-checksums.txt > rtk-checksum.txt; \
-    sha256sum -c - < rtk-checksum.txt; \
-    tar -xzf "${RTK_ARCHIVE}" -C /usr/local/bin rtk; \
-    rm -f "${RTK_ARCHIVE}" rtk-release.json rtk-checksums.txt rtk-checksum.txt; \
-    test "$(rtk --version)" = "rtk ${RTK_TAG#v}"
-
 # Follow NodeSource's current LTS channel and npm's latest release.
 # Fail rather than silently install npm on an unsupported Node engine.
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x -o /tmp/nodesource.sh \

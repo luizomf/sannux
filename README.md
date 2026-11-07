@@ -25,8 +25,7 @@ Each template lives in `templates/<template>/` and is self-contained. You can
 clone the whole repo and use the root `justfile`, or copy one template folder to
 a VPS and use plain Docker Compose.
 
-All images include the latest checksum-verified RTK release. The Pi image also
-bundles the latest Codex CLI for extensions and nested agent calls.
+The Pi image bundles the latest Codex CLI for extensions and nested agent calls.
 
 Only the Debian base image is pinned. Installed tools follow upstream
 stable/latest channels; Node.js follows current LTS and npm follows latest.

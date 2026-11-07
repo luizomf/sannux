@@ -7,7 +7,12 @@ Somente a base Debian fica fixada. Esta auditoria registra observações, não n
 exigências de versão. Veja o [contrato](template-contract.md) e o
 [checklist de manutenção](../AGENTS.md#shared-runtime-maintenance-checklist).
 
-## Inventário e decisões
+> **Auditoria histórica (#28):** o RTK não é mais instalado em nenhum template
+> Sannux após a [#37](https://github.com/luizomf/sannux/issues/37). Instalação,
+> checksums, suporte de arquitetura e resultados de smoke do RTK abaixo descrevem
+> apenas as imagens e os testes anteriores, não o contrato ou a validação atuais.
+
+## Inventário e decisões históricos
 
 | Superfície | Constatação e decisão |
 | --- | --- |
@@ -25,7 +30,7 @@ Versão da sintaxe Dockerfile, versões de schema/protocolo, exemplos de modelos
 portas e UID/GID não foram tratados como pins. Pacotes Debian continuam limitados
 aos repositórios da distribuição escolhida, não ao latest de cada upstream.
 
-## Validação real
+## Validação registrada na #28
 
 - Baseline `just check`: falhou nas três exigências antigas de pin do Codex/Pi.
 - Novo guard global: RED nos dez Dockerfiles, depois GREEN. O teste de bypass

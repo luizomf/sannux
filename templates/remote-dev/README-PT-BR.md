@@ -34,7 +34,7 @@ Example using `codex-ollama` (in Brazilian Portuguese).
 
 ## O que este template entrega
 
-- `Dockerfile`: servidor OpenSSH, Codex CLI, RTK, Node.js, Python, ferramentas
+- `Dockerfile`: servidor OpenSSH, Codex CLI, Node.js, Python, ferramentas
   de build e utilitários comuns de CLI.
 - `compose.yml`: serviço `ssh` de longa duração no Compose profile `daemon`,
   mais um shell auxiliar não-root no serviço `agent`.
@@ -243,7 +243,7 @@ Docker. Monte apenas a pasta de projeto que o app remoto deve ver, e mantenha a
 ## Atualização das ferramentas
 
 Somente a base Debian fica fixada. Ferramentas seguem stable/latest do upstream;
-Node.js segue o LTS atual, npm segue latest e RTK usa o checksum da mesma release.
+Node.js segue o LTS atual e npm segue latest.
 Use `just rebuild remote-dev` na raiz ou `docker compose build --no-cache --pull`
 nesta pasta. Builds comuns com cache podem reutilizar ferramentas antigas.
 Locks e limites de compatibilidade mantidos pelo upstream são preservados.

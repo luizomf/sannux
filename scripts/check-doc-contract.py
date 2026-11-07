@@ -964,6 +964,8 @@ class ContractCheck:
                 r"https?://\S*/(?:v?\d+\.\d+[^/\s]*|[a-f0-9]{40})/",
                 r"--(?:branch|tag)\s+[\"']?(?:v?\d|[a-f0-9]{40})",
             ]
+            if re.search(r"\brtk\b", code, re.IGNORECASE):
+                self.fail(relative, "RTK must not be installed or invoked in Dockerfiles")
             if any(re.search(pattern, code) for pattern in forbidden):
                 self.fail(relative, "tool update policy forbids fixed tool versions/checksums")
             for line in code.splitlines():
@@ -974,10 +976,6 @@ class ContractCheck:
             self.require_terms(relative, text, [
                 "https://deb.nodesource.com/setup_lts.x",
                 "npm install --global --engine-strict npm@latest",
-                "https://api.github.com/repos/rtk-ai/rtk/releases/latest",
-                "checksums.txt", "sha256sum -c -",
-                "x86_64-unknown-linux-musl", "aarch64-unknown-linux-gnu",
-                "Unsupported RTK architecture", "rtk --version",
                 "node --version", "npm --version",
             ])
             if dockerfile.parent.name in {"codex", "codex-ollama", "pi", "remote-dev"}:
